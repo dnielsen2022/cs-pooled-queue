@@ -1,0 +1,107 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit configuration for cs-pooled-queue.
+# Built to exercise every rung of CodeRabbit's configuration maturity model:
+#   L2  path instructions + code guidelines (this file, AGENTS.md)
+#   L3  learnings (created by replying to review comments; scope below)
+#   L4  pre-merge checks (below), scheduled reports and MCP (set up in the app UI)
+
+language: en-US
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "^main$"
+
+  path_filters:
+    - "!data/private/**"
+    - "!**/*.lock"
+
+  path_instructions:
+    - path: "pooled_queue/**/*.py"
+      instructions: |
+        This package turns a CodeRabbit account export into a pooled CS work list.
+        - Every threshold (ARR band, renewal windows, config levels, SLAs, weekly capacity) must be
+          read from config/queue_rules.yaml. Flag any hard-coded number that should be config.
+        - SLAs are business days, not calendar days. Flag calendar-day arithmetic used for an SLA.
+        - Every routing decision must carry a human-readable reason string; a CSM reads it in the sheet.
+        - Missing or contradictory data must be flagged in data_flags, never silently dropped or defaulted.
+        - Non-renewal intent always creates a case, even when other data on the row is bad.
+
+    - path: "config/queue_rules.yaml"
+      instructions: |
+        This file is the queue's policy. Review it like a pricing change, not a code change.
+        - Every trigger needs a priority, an SLA in business days and a first_touch line.
+        - Priorities must be consistent with the stated churn evidence: solo accounts churn about 3.5x
+          and dormant accounts about 2.5x the base rate; non-renewal intent is always P1.
+        - Call out any change that would materially raise or lower weekly case volume.
+
+    - path: "docs/playbooks/**"
+      instructions: |
+        Read this as a pooled CSM on their first day. Flag any step that lacks an owner, a timing,
+        or a clear next action. Every playbook must say what closes the case and what is recorded on close.
+        Flag jargon a new hire would not know.
+
+    - path: "tests/**"
+      instructions: |
+        Look for missing edge cases: renewal date already past, active users greater than seats,
+        an account flagged both dormant and solo, ARR outside the $10k-$30k band, blank config level.
+
+    - path: "data/**"
+      instructions: |
+        Only synthetic data belongs in this repo. Flag anything that looks like a real company name,
+        a real person, an email address or an account ID from a production system.
+
+  pre_merge_checks:
+    title:
+      mode: warning
+      requirements: "Start with an imperative verb; keep under 60 characters."
+    description:
+      mode: error
+    docstrings:
+      mode: warning
+      threshold: 80
+    issue_assessment:
+      mode: off
+    custom_checks:
+      - name: "Queue thresholds live in config"
+        mode: error
+        instructions: >-
+          Fail if this PR adds or changes a numeric threshold for the queue (ARR band, renewal window
+          in days, config level, SLA days, weekly capacity) inside Python code instead of in
+          config/queue_rules.yaml. Pass if the PR only reads thresholds from config or touches no thresholds.
+      - name: "Playbook defines how a case closes"
+        mode: warning
+        instructions: >-
+          Only applies when files under docs/playbooks/ change. Fail if any changed playbook is missing
+          a section titled "Closes when" or a section titled "Recorded on close". Pass otherwise.
+      - name: "Rule change states volume impact"
+        mode: warning
+        instructions: >-
+          Only applies when config/queue_rules.yaml changes. Fail if the PR description does not state
+          the expected effect on weekly case volume (more, fewer or unchanged, with a rough number).
+
+  tools:
+    ruff:
+      enabled: true
+    markdownlint:
+      enabled: true
+    yamllint:
+      enabled: true
+    gitleaks:
+      enabled: true
+
+knowledge_base:
+  learnings:
+    scope: auto
+  code_guidelines:
+    filePatterns:
+      - "AGENTS.md"
+  mcp:
+    # "auto" skips MCP on public repositories; this repo is public, so turn it on explicitly.
+    usage: enabled
