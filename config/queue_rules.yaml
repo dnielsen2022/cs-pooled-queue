@@ -50,7 +50,7 @@ triggers:
     sla_business_days: 2
     automated_track: "Customer.io dormant re-engagement; case at day 21 or at renewal minus 120"
   solo:
-    renewal_within_days: 150
+    renewal_within_days: 120
     priority: P2
     sla_business_days: 3
     automated_track: "Customer.io 'bring your team' track; case at day 21 or at renewal minus 150"
