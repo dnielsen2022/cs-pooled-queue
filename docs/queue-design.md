@@ -16,7 +16,7 @@ Flags apply at every configuration maturity level (L1 to L4).
 | Non-renewal intent | Always, inside the band | n/a | P1, 1 business day | CSM without AI |
 | Cancellation started | Always, inside the band | n/a | P1, 1 business day | CSM without AI |
 | Dormant (nobody active in 30 days) | L3-L4 any time; L1-L2 within 120 days of renewal | Re-engagement campaign; case at day 21 | P1, P2 or P3; 2-3 days | CSM with AI |
-| Solo (one active user) | Within 150 days of renewal (monthly terms always) | "Bring your team" campaign; case at day 21 | P2 or P3; 3 days | CSM with AI |
+| Solo (one active user) | Within 120 days of renewal (monthly terms always) | "Bring your team" campaign; case at day 21 | P2 or P3; 3 days | CSM with AI |
 | Stalled onboarding (in use, still L1 after day 45) | Within 180 days of renewal | Configuration campaign | P3, 3 days | CSM with AI |
 | Seat headroom (more active users than seats) | Never a case | Task for the account executive | AE, 2 days | Automation creates the task |
 | Customer asks for help (triaged as advisory) | Always, inside the band | Known friction: docs answer; product fault: Support; buying: AE | P3, or P2 if flagged or renewing within 90 days; 2 days | CSM with AI |
