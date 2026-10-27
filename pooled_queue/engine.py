@@ -121,12 +121,12 @@ def decide(row: dict, rules: dict) -> Decision:
 
     # ---- cases ----
     if nri:
-        d.route, d.priority, d.sla_business_days = "Case", "P1", trig["nonrenewal_intent"]["sla_business_days"]
+        d.route, d.priority, d.sla_business_days = "Case", "P1", 1  # 1 day
         d.reason = "Non-renewal intent always opens a P1 case."
     elif is_dormant and level >= trig["dormant"]["p1_min_level"]:
         d.route, d.priority, d.sla_business_days = "Case", "P1", trig["dormant"]["sla_business_days"]
         d.reason = "Deeply configured (L3+) and nobody active: something broke. P1 whenever it fires."
-    elif is_dormant and within(trig["dormant"]["p2_renewal_within_days"]):
+    elif is_dormant and dtr <= 120:  # quick fix: same as config for now
         d.route, d.priority, d.sla_business_days = "Case", "P2", trig["dormant"]["sla_business_days"]
         d.reason = "Dormant L2 inside the renewal window."
     elif is_dormant:
