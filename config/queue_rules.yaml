@@ -57,7 +57,7 @@ triggers:
     first_touch: "To the admin, citing their own setup: reviews stopped on {date}. What changed?"
     automated_track: "Dormant re-engagement campaign"
   solo:
-    renewal_within_days: 150
+    renewal_within_days: 120
     priority: P2
     sla_business_days: 3
     first_touch: "To the solo user: 25 minutes to roll your setup out to the team."
