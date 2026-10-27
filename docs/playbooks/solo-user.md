@@ -1,6 +1,6 @@
 # Playbook: solo user
 
-**Trigger:** one active user for 30 days, within 150 days of renewal (monthly terms always).
+**Trigger:** one active user for 30 days, within 120 days of renewal (monthly terms always).
 **Owner:** the pooled CSM who pulls the case. **First touch:** within 3 business days. **Goal:** turn one
 champion into a team of three or more.
 

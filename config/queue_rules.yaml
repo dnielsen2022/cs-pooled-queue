@@ -96,7 +96,7 @@ triggers:
     first_touch: "To the admin, citing their own setup: reviews stopped on {date}. What changed?"
     automated_track: "Dormant re-engagement campaign"
   solo:
-    renewal_within_days: 150
+    renewal_within_days: 120
     priority: P2
     sla_business_days: 3
     handled_by: CSM with AI  # AI drafts the rollout email from their own setup; the CSM edits and sends
