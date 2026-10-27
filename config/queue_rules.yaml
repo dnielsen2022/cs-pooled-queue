@@ -1,0 +1,75 @@
+# Pooled CS queue policy. Tune here, not in code ("config, not code").
+# Every change to this file must say in the PR what it does to weekly case volume.
+
+version: 1
+as_of: "2026-10-05"
+
+band:
+  min_arr: 10000
+  max_arr: 30000
+  price_per_seat: 360   # every in-band row prices at $30/seat/month; used to size seat headroom
+
+# Export column names (CodeRabbit sample queue export, v2).
+columns:
+  account: account
+  arr: arr_usd
+  level: maturity_level
+  seats_purchased: seats_purchased
+  seats_active: seats_active_30d
+  active_users: active_users_30d
+  days_since_last_review: days_since_last_review
+  renewal_date: renewal_date
+  term: term
+  nonrenewal_intent: nonrenewal_intent
+  cancellation_started: cancellation_started
+  support_tickets: support_tickets_30d
+  days_since_signup: days_since_signup
+  success_manager: success_manager
+
+# Flag definitions, as the scenario defines them.
+flags:
+  dormant:            # configured, but nobody active in 30 days
+    min_level: 2
+    max_active_users: 0
+  solo:               # configured and active, but carried by one person
+    min_level: 2
+    active_users: 1
+  stalled_onboarding: # nothing configured beyond defaults after the nurture window
+    level: 1
+    min_days_since_signup: 45
+  seat_headroom:      # more people using it than seats bought
+    active_users_exceed_seats: true
+
+triggers:
+  nonrenewal_intent:
+    priority: P1
+    sla_business_days: 1
+  dormant:
+    p1_min_level: 3
+    p2_renewal_within_days: 120
+    sla_business_days: 2
+    automated_track: "Customer.io dormant re-engagement; case at day 21 or at renewal minus 120"
+  solo:
+    renewal_within_days: 150
+    priority: P2
+    sla_business_days: 3
+    automated_track: "Customer.io 'bring your team' track; case at day 21 or at renewal minus 150"
+  stalled_onboarding:
+    renewal_within_days: 180
+    priority: P3
+    sla_business_days: 3
+    automated_track: "Customer.io config track (starter path instructions); case at renewal minus 180"
+  onboarding:
+    automated_track: "Customer.io onboarding nurture (days 0-45)"
+  seat_headroom:
+    route: AE
+
+# Monthly-term accounts can leave at any month end, so they count as inside every renewal window.
+monthly_always_in_window: true
+
+ordering:
+  priority_rank: {P1: 1, P2: 2, P3: 3}
+  renewal_buckets_days: [30, 90, 180]   # then deeper config level first, then higher ARR
+
+capacity:
+  this_week_cases: 10
