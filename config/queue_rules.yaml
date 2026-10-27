@@ -1,0 +1,134 @@
+# Pooled CS queue policy. Tune here, not in code ("config, not code").
+# Every change to this file must say in the PR what it does to weekly case volume.
+---
+version: 2
+
+band:
+  min_arr: 10000
+  max_arr: 30000
+  price_per_seat: 360  # USD per seat per year; used to size seat headroom
+
+# Column names in the account export.
+columns:
+  account: account
+  arr: arr_usd
+  level: maturity_level
+  seats_purchased: seats_purchased
+  seats_active: seats_active_30d
+  active_users: active_users_30d
+  days_since_last_review: days_since_last_review
+  renewal_date: renewal_date
+  term: term
+  nonrenewal_intent: nonrenewal_intent
+  cancellation_started: cancellation_started
+  support_tickets: support_tickets_30d
+  days_since_signup: days_since_signup
+  success_manager: success_manager
+
+# Account flags. They apply at every configuration maturity level (L1 to L4).
+flags:
+  dormant:
+    max_active_users: 0  # nobody active in the activity window
+    idle_days_to_fire: 30  # the flag fires after this many days without a review
+  solo:
+    active_users: 1  # active, but carried by one person
+  stalled_onboarding:
+    level: 1  # nothing configured beyond defaults...
+    min_active_users: 2  # ...while people are using it
+  onboarding:
+    max_days_since_signup: 44  # the onboarding nurture covers days 0-44
+
+# Who handles work, by route. Every case trigger below also names its handled_by mode.
+#   Automation      Customer.io runs it end to end; no person involved
+#   CSM with AI     a pooled CSM works it, with AI preparing the account summary and drafts
+#   CSM without AI  a pooled CSM works it; AI stays out because one wrong word costs the account
+handling:
+  modes: [Automation, CSM with AI, CSM without AI, Named CSM]
+  automated_route: Automation  # campaigns and healthy accounts
+  hold_route: CSM without AI  # verify the data with the analytics engineer before anyone, or any AI, acts
+  below_band: Automation  # the automated tier
+  above_band_or_named: Named CSM
+
+# What AI does in a pooled CSM's day, and its limits. AI drafts; a person decides and sends.
+ai:
+  drafts: [account summary, first message, proposed playbook step, case note]
+  never_without_review: [any message to a customer, a close code, a seat or price figure]
+  never_assists: [nonrenewal_intent, cancellation_started]  # triggers AI never drafts for
+  orders_queue: false  # the queue order comes from the rules below, never from AI
+  review_sample_per_week: 10  # AI drafts the queue lead checks against the account record
+  revert_if_wrong_fact_rate_over: 0.05  # wrong facts this often: the trigger goes back to CSM without AI
+
+# Testing the automated share against the human share. Applied by the campaign tool, not by this engine.
+measurement:
+  holdout_share: 0.2  # of accounts that qualify for a case, this share stays on automation only
+  reverse_sample_share: 0.1  # of accounts left to automation, this share gets a CSM-with-AI case instead
+
+# Triggers that can open a case. Each case trigger has a priority, an SLA, a first touch and a handler.
+triggers:
+  nonrenewal_intent:
+    priority: P1
+    sla_business_days: 1
+    handled_by: CSM without AI  # a save conversation; the customer must hear a person, in their own words
+    first_touch: "CSM email and a 20-minute call: what would have to change for you to renew?"
+  cancellation_started:
+    priority: P1
+    sla_business_days: 1
+    handled_by: CSM without AI
+    first_touch: "Same-day call: capture the reason and offer a smaller plan; don't chase."
+  dormant:
+    deep_level: 3  # deeply configured and silent: something broke
+    deep_priority: P1
+    near_renewal_days: 120
+    near_renewal_priority: P2
+    sla_business_days: 2
+    handled_by: CSM with AI  # AI summarizes when and where reviews stopped; the CSM writes the ask
+    first_touch: "To the admin, citing their own setup: reviews stopped on {date}. What changed?"
+    automated_track: "Dormant re-engagement campaign"
+  solo:
+    renewal_within_days: 150
+    priority: P2
+    sla_business_days: 3
+    handled_by: CSM with AI  # AI drafts the rollout email from their own setup; the CSM edits and sends
+    first_touch: "To the solo user: 25 minutes to roll your setup out to the team."
+    automated_track: "'Bring your team' campaign"
+  stalled_onboarding:
+    renewal_within_days: 180
+    priority: P3
+    sla_business_days: 3
+    handled_by: CSM with AI  # AI drafts starter path instructions for their main repo; the CSM checks them
+    first_touch: "Starter path instructions for their main repo and a 30-minute setup call."
+    automated_track: "Configuration campaign (starter path instructions)"
+  automation_exhausted:
+    track_days: 21  # a campaign that runs this long without the account moving becomes a case
+    priority: P3
+    sla_business_days: 3
+    handled_by: CSM with AI
+    first_touch: "One personal note: the campaign didn't land, so ask what's in the way."
+  onboarding:
+    handled_by: Automation
+    automated_track: "Onboarding nurture campaign"
+  seat_headroom:
+    route: AE
+    handled_by: Automation  # the CRM task is created automatically; the AE is the person who acts
+    sla_business_days: 2
+    first_touch: "AE: confirm the unseated users in-product, then quote the true-up."
+
+# Monthly-term accounts can leave at any month end, so they count as inside every renewal window.
+monthly_always_in_window: true
+
+# Data checks: flag, never drop.
+data_checks:
+  price_tolerance_usd: 1  # ARR per seat this far from price_per_seat is flagged
+  mismatch_max_users: 1  # this many active users or fewer...
+  mismatch_min_seats: 5  # ...with at least this many active seats is a contradiction
+  seats_vs_users_gap: 10  # active seats above active users by this much is flagged
+  activity_window_days: 30  # the window active users are counted in
+  tickets_to_read_first: 1  # this many recent tickets or more: read them before the first touch
+  hold_on_contradiction: true  # contradictory activity data holds outreach (not non-renewal intent)
+
+ordering:
+  priority_rank: {P1: 1, P2: 2, P3: 3}
+  renewal_buckets_days: [7, 30, 90, 180]  # then deeper configuration first, then higher ARR
+
+capacity:
+  this_week_cases: 10
