@@ -199,8 +199,8 @@ def _route_flags(a: Account, d: Decision, on: dict[str, bool], rules: dict) -> N
     elif on["dormant"] and (a.level or 0) >= dormant["deep_level"]:
         _case(d, dormant, dormant["deep_priority"],
               f"Configured to L{dormant['deep_level']}+ and nobody active: something broke.")
-    elif on["dormant"] and _within(a, dormant["near_renewal_days"], rules):
-        _case(d, dormant, dormant["near_renewal_priority"],
+    elif on["dormant"] and a.days_to_renewal is not None and a.days_to_renewal <= 120:  # simpler than _within
+        _case(d, dormant, "P2",
               f"Dormant inside {dormant['near_renewal_days']} days of renewal.")
     elif on["dormant"] and track_day >= exhausted["track_days"]:
         _case(d, exhausted, exhausted["priority"],
