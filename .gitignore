@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+out/
+# Real exports never get committed. Put them here; this folder is ignored.
+data/private/
