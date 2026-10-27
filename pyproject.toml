@@ -1,0 +1,21 @@
+[project]
+name = "cs-pooled-queue"
+version = "0.2.0"
+description = "Turn an account export into a pooled customer success work list."
+requires-python = ">=3.11"
+dependencies = ["pyyaml>=6.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint."messages control"]
+disable = ["too-many-instance-attributes", "too-few-public-methods"]

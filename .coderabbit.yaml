@@ -1,0 +1,93 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit configuration for cs-pooled-queue, built to exercise each configuration maturity level:
+#   L2  path instructions and code guidelines (this file and AGENTS.md)
+#   L3  learnings, taught by replying to review comments
+#   L4  pre-merge checks (below), plus a scheduled report and MCP context set up in the CodeRabbit app
+---
+language: en-US
+
+reviews:
+  profile: assertive
+  high_level_summary: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+
+  path_filters:
+    - "!data/private/**"
+
+  path_instructions:
+    - path: "pooled_queue/**/*.py"
+      instructions: |
+        This package turns an account export into a pooled customer success work list.
+        - Every queue threshold (ARR band, renewal windows, maturity levels, priorities, SLAs, data-check limits,
+          weekly capacity) must be read from config/queue_rules.yaml. Flag any number that should be config.
+        - SLAs are business days; renewal windows are calendar days.
+        - Every routing decision carries a reason a CSM can read.
+        - Missing or contradictory data is recorded in data_flags, never silently dropped or defaulted.
+        - Inside the band, non-renewal intent always opens a case, even when other cells on the row are bad.
+
+    - path: "config/queue_rules.yaml"
+      instructions: |
+        This file is the queue's policy. Review it like a pricing change, not a code change.
+        - Every case-opening trigger needs a priority, an SLA in business days and a first_touch line.
+        - Solo and dormant accounts churn well above the base rate and non-renewal intent is always P1;
+          flag priorities that contradict that.
+        - Call out any change that would materially raise or lower weekly case volume.
+
+    - path: "docs/playbooks/**"
+      instructions: |
+        Read this as a pooled CSM on their first day. Flag any step without an owner, a timing or a clear
+        next action. Every playbook must say what closes the case and what is recorded on close.
+
+    - path: "tests/**"
+      instructions: |
+        Tests must read thresholds from the policy file rather than restating them. Look for missing edge
+        cases: renewal date in the past, blank cells, contradictory activity data, out-of-band ARR.
+
+    - path: "data/**"
+      instructions: |
+        Only synthetic data belongs here. Flag anything that looks like a real company, person, email
+        address or production account ID.
+
+  pre_merge_checks:
+    title:
+      mode: "warning"
+      requirements: "Start with an imperative verb; keep under 60 characters."
+    description:
+      mode: "warning"
+    docstrings:
+      mode: "warning"
+      threshold: 80
+    issue_assessment:
+      mode: "off"
+    custom_checks:
+      - name: "Queue thresholds live in config"
+        mode: "error"
+        instructions: >-
+          Fail if this PR adds or changes a numeric queue threshold (ARR band, renewal window in days,
+          maturity level, priority, SLA days, data-check limit, weekly capacity) inside Python code instead
+          of in config/queue_rules.yaml. Pass if the PR only reads thresholds from config or touches none.
+      - name: "Playbook defines how a case closes"
+        mode: "warning"
+        instructions: >-
+          Only applies when files under docs/playbooks/ change. Fail if a changed playbook is missing a
+          section titled "Closes when" or a section titled "Recorded on close". Pass otherwise.
+      - name: "Rule change states volume impact"
+        mode: "warning"
+        instructions: >-
+          Only applies when an existing config/queue_rules.yaml is modified. Fail if the PR description
+          does not state the expected effect on weekly case volume (more, fewer or unchanged, with a rough
+          number). Pass otherwise, including when the file is being added for the first time.
+
+knowledge_base:
+  learnings:
+    scope: auto
+  code_guidelines:
+    filePatterns:
+      - "AGENTS.md"
+  mcp:
+    # "auto" skips MCP context on public repositories; this repository is public, so turn it on explicitly.
+    usage: enabled
