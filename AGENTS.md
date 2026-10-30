@@ -18,6 +18,9 @@ A small engine that turns an account export into a pooled customer success work 
 5. **Business days for SLAs**, calendar days for renewal windows.
 6. **Flags apply at every maturity level:** dormant = nobody active in 30 days; solo = exactly one active user.
 7. **Synthetic data only** in `data/`. Real exports go in `data/private/`, which git ignores.
+8. **AI drafts, a person sends.** Every case trigger names who handles it (`handled_by`: Automation, CSM with
+   AI, or CSM without AI), and the work list carries it. No code path lets AI send a customer message, set a
+   close code or order the queue; those limits live in the `ai` section of the policy file.
 
 ## Style
 

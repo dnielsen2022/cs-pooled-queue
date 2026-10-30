@@ -36,11 +36,16 @@ reviews:
         - Solo and dormant accounts churn well above the base rate and non-renewal intent is always P1;
           flag priorities that contradict that.
         - Call out any change that would materially raise or lower weekly case volume.
+        - Every case trigger needs handled_by: Automation, CSM with AI, or CSM without AI. Flag a trigger
+          listed under ai.never_assists that is moved to CSM with AI, and any change that would let AI
+          contact a customer, set a close code or order the queue without a person reviewing it.
 
     - path: "docs/playbooks/**"
       instructions: |
         Read this as a pooled CSM on their first day. Flag any step without an owner, a timing or a clear
-        next action. Every playbook must say what closes the case and what is recorded on close.
+        next action. Every step is marked Automated, AI-assisted or Person, and an AI-assisted step says
+        what the person checks before anything reaches the customer. Every playbook must say what closes
+        the case and what is recorded on close.
 
     - path: "tests/**"
       instructions: |
@@ -74,13 +79,20 @@ reviews:
         mode: "warning"
         instructions: >-
           Only applies when files under docs/playbooks/ change. Fail if a changed playbook is missing a
-          section titled "Closes when" or a section titled "Recorded on close". Pass otherwise.
+          section titled "Closes when" or a section titled "Recorded on close", or if any row of its steps
+          table is not marked Automated, AI-assisted or Person. Pass otherwise.
       - name: "Rule change states volume impact"
         mode: "warning"
         instructions: >-
           Only applies when an existing config/queue_rules.yaml is modified. Fail if the PR description
           does not state the expected effect on weekly case volume (more, fewer or unchanged, with a rough
           number). Pass otherwise, including when the file is being added for the first time.
+      - name: "Every trigger says who handles it"
+        mode: "warning"
+        instructions: >-
+          Only applies when config/queue_rules.yaml is added or changed. Fail if any trigger that can open
+          a case has no handled_by value of Automation, CSM with AI or CSM without AI, or if a trigger
+          listed under ai.never_assists is set to CSM with AI. Pass otherwise.
 
 knowledge_base:
   learnings:
