@@ -57,8 +57,9 @@ The `ai` section of the policy file holds these limits, and CodeRabbit flags any
 1. **The sender checks.** The CSM who sends a draft owns every fact in it. A wrong fact gets marked on the
    case, so it's counted.
 2. **A weekly sample.** The queue lead checks 10 AI drafts a week against the account record.
-3. **A revert rule.** If more than 5% of a trigger's drafts get a fact wrong, that trigger goes back to CSM
-   without AI until the cause is fixed.
+3. **A revert rule.** If more than 5% of a trigger's reviewed drafts get a fact wrong over a rolling four
+   weeks (about 40 drafts), that trigger goes back to CSM without AI until the cause is fixed. A week of 10
+   drafts is too few to judge on its own.
 4. **Edit rate.** The team tracks how much each draft is rewritten before it's sent. Heavy rewrites on one
    trigger mean the draft isn't helping there.
 
@@ -66,8 +67,9 @@ The `ai` section of the policy file holds these limits, and CodeRabbit flags any
 
 Two random samples, both applied by the campaign tool:
 
-- **Holdout:** 1 in 5 accounts that qualify for a case stays on automation only. If worked accounts don't
-  beat held-out ones, the person isn't adding value on that trigger.
+- **Holdout:** 1 in 5 accounts that qualify for a case stays on automation only. Non-renewal intent and
+  cancellation are never held out. If worked accounts don't beat held-out ones, the person isn't adding
+  value on that trigger.
 - **Reverse sample:** 1 in 10 accounts left to automation gets a CSM-with-AI case. If those do better, the
   trigger should move toward a person.
 

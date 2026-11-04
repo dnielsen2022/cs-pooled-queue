@@ -105,7 +105,7 @@ AGENTS.md                  code guidelines CodeRabbit reviews against
 | L1 | Installed with defaults | The CodeRabbit GitHub app on this repo |
 | L2 | Told what good looks like | Path instructions in [`.coderabbit.yaml`](.coderabbit.yaml), code guidelines in [`AGENTS.md`](AGENTS.md) |
 | L3 | Learns from the team | Learnings taught by replying to review comments |
-| L4 | Enforces and reports | Custom pre-merge checks in [`.coderabbit.yaml`](.coderabbit.yaml): thresholds must live in config, playbooks must say how a case closes, rule changes must state their volume impact. A scheduled report and MCP context are set up in the CodeRabbit app |
+| L4 | Enforces and reports | Custom pre-merge checks in [`.coderabbit.yaml`](.coderabbit.yaml): thresholds must live in config, playbooks must say how a case closes, rule changes must state their volume impact, and every trigger must say who handles it. A scheduled report and MCP context are set up in the CodeRabbit app |
 
 The pull requests show each step, including a deliberately flawed change that the custom pre-merge check
 catches.

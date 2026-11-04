@@ -111,7 +111,7 @@ the queue gets lighter as the team learns.
 
 Once a month the team reports effort (cases, SLA hit rate, touches) apart from outcome (flags cleared,
 renewals kept). The main number is gross revenue retention on renewals that carried a flag. A random holdout
-keeps 1 in 5 qualifying accounts on automation only, so the readout shows whether a person, not time, made
+keeps 1 in 5 qualifying accounts on automation only (never a non-renewal or cancellation case), so the readout shows whether a person, not time, made
 the difference, and whether the automated share holds retention as well as the human share.
 
 ### 9. The rules change through a pull request

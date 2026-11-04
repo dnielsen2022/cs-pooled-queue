@@ -49,8 +49,8 @@ or **Person** (a person does it, no AI).
 | Same day as the call | AI-assisted | CSM | AI drafts the recap and a one-page rollout plan from the call notes. The CSM corrects and sends it. |
 | Same day as the call | Automated | Campaign tool | Newly seated developers enter the 3-email "first review" campaign. More developers than seats: an AE task is created. |
 | Day 14 | Automated | System | Active users are checked and shown on the case. |
-| Day 14 | Person | CSM | Three or more active users: watch. Fewer: a second touch to the engineering lead, showing the reviews their team is missing. AI may draft it; the CSM decides whether to send. |
-| Day 30 | Person | CSM | Close with a code. Two active users: extend once to day 44, then close. AI drafts the case note; the CSM picks the code and the blocker. |
+| Day 14 | AI-assisted | CSM | Three or more active users: watch. Fewer: a second touch to the engineering lead, showing the reviews their team is missing. AI may draft it; the CSM decides whether to send. |
+| Day 30 | AI-assisted | CSM | Close with a code. Two active users: extend once to day 44, then close. AI drafts the case note; the CSM picks the code and the blocker. |
 
 The CSM never changes the customer's settings. The admin does, on the call, with the CSM guiding. If the solo
 user isn't the admin, invite the admin to the call with the solo user's agreement.

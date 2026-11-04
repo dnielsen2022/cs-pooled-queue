@@ -56,11 +56,11 @@ ai:
   never_assists: [nonrenewal_intent, cancellation_started]  # triggers AI never drafts for
   orders_queue: false  # the queue order comes from the rules below, never from AI
   review_sample_per_week: 10  # AI drafts the queue lead checks against the account record
-  revert_if_wrong_fact_rate_over: 0.05  # wrong facts this often: the trigger goes back to CSM without AI
+  revert_if_wrong_fact_rate_over: 0.05  # over a rolling 4 weeks of reviewed drafts: back to CSM without AI
 
 # Testing the automated share against the human share. Applied by the campaign tool, not by this engine.
 measurement:
-  holdout_share: 0.2  # of accounts that qualify for a case, this share stays on automation only
+  holdout_share: 0.2  # share of case-qualifying accounts kept on automation; never intent or cancellation
   reverse_sample_share: 0.1  # of accounts left to automation, this share gets a CSM-with-AI case instead
 
 # Triggers that can open a case. Each case trigger has a priority, an SLA, a first touch and a handler.
