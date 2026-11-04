@@ -185,7 +185,7 @@ def _route_out_of_band(a: Account, d: Decision, rules: dict) -> bool:
     elif a.arr is not None and a.arr > band["max_arr"]:
         d.route, d.reason = "Remove", f"Above the ${band['max_arr']:,} band: belongs with a named CSM."
     elif a.arr is not None and a.arr < band["min_arr"]:
-        d.route, d.reason = "Remove", f"Below the ${band['min_arr']:,} band: product and automated programmes."
+        d.route, d.reason = "Remove", f"Below the ${band['min_arr']:,} band: product and automated programs."
     return d.route == "Remove"
 
 
