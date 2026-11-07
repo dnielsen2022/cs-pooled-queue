@@ -13,7 +13,7 @@
 | Case | A unit of work for a pooled CSM, opened by a signal and closed with a close code |
 | Close code | How a case ended: saved, saved and right-sized, handed to the AE, handed up to a named CSM, lost with a reason, no reply, or back to campaign |
 | CSM with AI | A handling mode: AI prepares the summary and drafts; the CSM decides and sends |
-| CSM without AI | A handling mode for cases where one wrong word can cost the account: a person writes every word |
+| CSM without AI | A handling mode for cases where one wrong word can cost the account: AI prepares an internal brief for the CSM, and a person writes every word |
 | CSM | Customer success manager |
 | Customer ask | A request for help through the support queue. Support triages it; only advisory requests become pooled cases |
 | Dormant | Nobody active in the last 30 days |

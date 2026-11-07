@@ -21,7 +21,7 @@ Each case arrives with:
 | Also | Notes that change your first touch (below) |
 | Data flags | Numbers on the account that don't add up |
 | Case brief | Who the users are, seats, configuration, renewal, open tickets and campaigns already sent |
-| Handled by | CSM with AI (AI drafts, you check and send) or CSM without AI (you write every word) |
+| Handled by | CSM with AI (AI drafts, you check and send) or CSM without AI (AI briefs you; you write every word) |
 
 ## Pulling a case
 
@@ -88,8 +88,9 @@ every fact, edit, and send. Four rules:
 1. **You send it, you own it.** Nothing AI writes reaches a customer unless you send it.
 2. **The brief wins.** When the AI summary and a brief field disagree, trust the brief field and mark the
    draft wrong on the case.
-3. **No AI on CSM-without-AI cases.** Non-renewal intent and cancellation are yours alone, in your own words.
-   If a case turns into one mid-way, stop using drafts.
+3. **No AI drafts on CSM-without-AI cases.** On non-renewal intent and cancellation, AI prepares your brief
+   (risk, usage trend, tickets, save options), and every word to the customer is yours. If a case turns into
+   one mid-way, stop using drafts.
 4. **AI never decides.** You pick the close code, the blocker and the next step. The queue order comes from
    the rules, not from AI.
 

@@ -6,7 +6,8 @@ Every signal the queue acts on is handled one of three ways, set by `handled_by`
 - **Automation:** the next step is the same for every account, so Customer.io runs it end to end.
 - **CSM with AI:** the conversation depends on the customer's own setup. AI prepares the summary and the
   drafts; the CSM decides and sends.
-- **CSM without AI:** one wrong word can cost the account, so a person writes every word.
+- **CSM without AI:** one wrong word can cost the account, so a person writes every word. AI still prepares
+  an internal brief for the CSM before the first touch; it drafts nothing the customer sees.
 
 The rule under all three: AI drafts, a person decides and sends. No AI output reaches a customer, sets a close
 code or orders the queue without a person.
@@ -23,9 +24,9 @@ code or orders the queue without a person.
 | Solo, inside the window | CSM with AI | The rollout depends on their own setup. AI drafts the email from it; the call is a person | n/a |
 | Stalled onboarding, inside the window | CSM with AI | AI drafts starter path instructions for their main repo; the CSM checks them before sending | n/a |
 | Stalled onboarding, outside the window | Automation | A configuration campaign with starter path instructions | Inside 180 days of renewal: a case |
-| Non-renewal intent or cancellation | CSM without AI | A save conversation. The customer has to hear a person, in their own words | n/a |
+| Non-renewal intent or cancellation | CSM without AI | A save conversation. The customer has to hear a person, in their own words. AI briefs the CSM: risk, usage trend, tickets, save options | n/a |
 | Seat headroom | Automation | The CRM task for the AE is created automatically; the AE is the person who acts | n/a |
-| Data that contradicts itself | CSM without AI | Verify with the analytics engineer first. AI would repeat the bad number in its summary | Verified data: the row is routed again |
+| Data that contradicts itself | CSM without AI | Verify with the analytics engineer first. AI only lists the contradictions to check; a summary would repeat the bad number | Verified data: the row is routed again |
 | Customer asks for help, triaged as advisory | CSM with AI | AI drafts an answer from the docs and similar past cases; the CSM checks it | Support routes it; see [queue design](queue-design.md#customer-requests) |
 
 In the exercise's 40-account sample, 20 of the 36 in-band accounts need no pooled CSM: 14 stay on automation
@@ -37,6 +38,7 @@ the queue. People are used only where the customer's situation decides what to s
 | Moment | What AI does | What the CSM does |
 | --- | --- | --- |
 | Before the first touch | Writes a short account summary from the case brief: usage, billing, CRM notes, support history | Checks it against the brief fields and fixes anything wrong |
+| Before a save | Prepares an internal save brief: why the account is flagged, renewal date and term, active users against seats over time, the last review, open tickets, and two or three save options from a fixed menu (right-size to active seats, a setup session, a teammate rollout, the AE for pricing) | Checks it, then writes every word to the customer |
 | The first message | Drafts it from the trigger's first touch and the account's own setup | Edits it and sends it. Nothing goes out unless a person sends it |
 | During the case | Proposes the next playbook step from the account's activity | Decides the step |
 | Closing | Drafts the case note from emails and call notes | Picks the close code and the blocker |
@@ -49,8 +51,9 @@ AI runs inside the tools the team already has (Pylon for the case and drafts), n
 The `ai` section of the policy file holds these limits, and CodeRabbit flags any pull request that loosens them.
 
 - **Never without review:** any message to a customer, a close code, a seat or price figure.
-- **Never at all:** drafting for non-renewal intent or cancellation; anything on a held account; ordering
-  the queue.
+- **Never at all:** drafting anything customer-facing for non-renewal intent or cancellation (AI only briefs
+  the CSM); restating the disputed numbers on a held account (AI only lists what to verify); ordering the
+  queue.
 
 ## How we catch AI getting an account wrong
 

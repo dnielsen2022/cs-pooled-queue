@@ -81,7 +81,7 @@ rules, reviewed by CodeRabbit like any other policy change.
 | --- | --- | --- |
 | `drafts` | list | What AI prepares for the CSM to check: account summary, first message, proposed playbook step, case note |
 | `never_without_review` | list | What a person approves every time |
-| `never_assists` | trigger names | Triggers AI never drafts for; they must be CSM without AI |
+| `never_assists` | trigger names | Triggers AI never drafts for (it only prepares the CSM's internal brief); they must be CSM without AI |
 | `orders_queue` | `true` or `false` | Whether AI may order the queue; `false`, so the rules decide |
 | `review_sample_per_week` | drafts | How many AI drafts the queue lead checks each week |
 | `revert_if_wrong_fact_rate_over` | share, 0 to 1 | Above this wrong-fact rate, measured over a rolling four weeks of reviewed drafts, a trigger goes back to CSM without AI |

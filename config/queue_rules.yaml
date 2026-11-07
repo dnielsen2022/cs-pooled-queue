@@ -41,11 +41,11 @@ flags:
 # Who handles work, by route. Every case trigger below also names its handled_by mode.
 #   Automation      Customer.io runs it end to end; no person involved
 #   CSM with AI     a pooled CSM works it, with AI preparing the account summary and drafts
-#   CSM without AI  a pooled CSM works it; AI stays out because one wrong word costs the account
+#   CSM without AI  a pooled CSM works it and writes every word; AI only prepares an internal brief for the CSM
 handling:
   modes: [Automation, CSM with AI, CSM without AI, Named CSM]
   automated_route: Automation  # campaigns and healthy accounts
-  hold_route: CSM without AI  # verify the data with the analytics engineer before anyone, or any AI, acts
+  hold_route: CSM without AI  # verify the data first; AI only lists what to check, never the disputed numbers
   below_band: Automation  # the automated tier
   above_band_or_named: Named CSM
 
@@ -53,7 +53,7 @@ handling:
 ai:
   drafts: [account summary, first message, proposed playbook step, case note]
   never_without_review: [any message to a customer, a close code, a seat or price figure]
-  never_assists: [nonrenewal_intent, cancellation_started]  # triggers AI never drafts for
+  never_assists: [nonrenewal_intent, cancellation_started]  # AI drafts nothing here; it only briefs the CSM
   orders_queue: false  # the queue order comes from the rules below, never from AI
   review_sample_per_week: 10  # AI drafts the queue lead checks against the account record
   revert_if_wrong_fact_rate_over: 0.05  # over a rolling 4 weeks of reviewed drafts: back to CSM without AI
