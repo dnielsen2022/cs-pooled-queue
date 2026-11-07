@@ -18,6 +18,7 @@
 | Customer ask | A request for help through the support queue. Support triages it; only advisory requests become pooled cases |
 | Dormant | Nobody active in the last 30 days |
 | First touch | The first thing the CSM says or does on a case, written into the policy so every CSM starts the same way |
+| Graduation | An account crossing the top of the band moves to a named CSM on a rule, with a brief for the CSM and a welcome for the customer |
 | GRR | Gross revenue retention: revenue kept at renewal, before any expansion. The team's main outcome measure |
 | Handled by | Who works a row: Automation, CSM with AI, CSM without AI, or a named CSM |
 | Hold | No outreach and no campaigns until the account's data is verified |

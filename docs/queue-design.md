@@ -72,4 +72,30 @@ automated step.
 - **Out to the account executive:** a buying signal (more users than seats, a request for seats), as a CRM task
   with who, what and by when.
 - **Out to support:** a product fault found during a case, filed with a reproduction; the case stays open.
-- **Up to a named CSM:** the account crosses $30k. Warm introduction, then the case closes.
+- **Up to a named CSM:** the account crosses $30k. Graduation runs on a rule, not a judgment call; see
+  Graduation below.
+
+## Graduation to a named CSM
+
+An account graduates when its ARR in billing crosses the top of the band (`band.max_arr`), whatever the
+reason: a seat expansion, a price change, or a move from a monthly to an annual term. The line lives in
+config because it is expected to move.
+
+What happens, with no one remembering to do it:
+
+1. **Assign.** The CRM assigns the named CSM and alerts them.
+2. **Brief.** The named CSM gets a graduation brief, not a cold account:
+   - pooled history: triggers that fired, close codes and the main blocker on each case;
+   - usage: active users at day 0, 30, 60 and 90 of the last case, maturity level, repositories connected;
+   - what they bought: plan, term, seats before and after, and the ARR change that crossed the line;
+   - open support tickets and the AE's notes.
+3. **Welcome.** The customer gets a short message naming their CSM, what changes and how to reach them. A
+   move to an annual term can make an account eligible without the customer knowing, and a named CSM who
+   arrives unannounced tends to meet silence.
+4. **Close.** An open pooled case closes as Handed up, with anything the brief can't know added as a note.
+
+Accounts that drop into the band come down the same way: the pooled team receives the named CSM's history
+before any case opens.
+
+Measured monthly: graduations, and how often the named CSM has to re-ask the customer something the brief
+already covered.

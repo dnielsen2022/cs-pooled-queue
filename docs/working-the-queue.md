@@ -48,14 +48,16 @@ A P3 left unworked for 5 business days moves up to P2, so nothing sits forever.
 | Note | What you do |
 | --- | --- |
 | Seat headroom | The AE already has a task. Don't quote seats or prices; tell the AE what you learn about the team |
-| Up-tier to a named CSM | Expansion would take the account past the band. Flag it in the case; the AE and the named-CSM lead decide |
+| Graduation coming | Expansion or a move to an annual term will take the account past the band. Note it in the case so the graduation brief carries it. Graduation itself runs on the rule, not a judgment call |
 | Read the recent support tickets | Read them before reaching out, and acknowledge any open issue in your first touch |
 | Data flags | Don't act on a flagged number. Confirm it with the customer or the analytics engineer first, and note what was wrong |
 
 ## When something changes mid-case
 
 - **Non-renewal intent or cancellation appears.** The case becomes P1. Switch to that first touch the same day.
-- **The account grows past the band.** Warm introduction to a named CSM, then close the case as handed up.
+- **The account crosses the band.** Graduation runs on its own: the named CSM is assigned and gets the brief,
+  and the customer gets a welcome. Add anything the brief can't know, then close the case as handed up
+  (see Graduation to a named CSM in the queue design).
 - **You find a product fault.** File it with Support, with a reproduction. Your case stays open.
 - **The customer asks for seats or pricing.** Create an AE task with who, what and by when. Keep only the
   retention work.

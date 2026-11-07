@@ -120,6 +120,8 @@ This is the smallest version of the queue that does the job. Each item below is 
   hand-offs happen in Pylon, Customer.io and Salesforce, which it doesn't connect to.
 - The engine doesn't call an AI model. It records who handles each case; AI drafting runs in the team's own
   tools, with a person reviewing every draft before it reaches a customer.
+- Graduation to a named CSM (assignment, the brief and the customer welcome) runs in Salesforce and
+  Customer.io. The engine routes accounts above the band to a named CSM and stops there.
 - Customer requests for help are routed by Support, not by the engine, because the triage bucket isn't in
   the export.
 - One run is a snapshot with no campaign history. A dormant account's campaign age is estimated from days
