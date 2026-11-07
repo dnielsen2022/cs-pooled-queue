@@ -110,9 +110,10 @@ without AI. [Automation, AI and the person](ai-and-automation.md) has the full d
 
 | When | What |
 | --- | --- |
-| Week 1 | Take CodeRabbit to L4 on a repository of your own, so you know every level from the inside |
-| Week 2 | Work P3 cases, with each one and every AI draft reviewed by the queue lead |
-| Weeks 3 to 4 | Half the cap: up to 10 open cases |
+| Weeks 1 to 2 | Company onboarding: equipment, HR and benefits, corporate training. Set up CodeRabbit on a repository of your own at L1 to L2 |
+| Week 3 | Take that repository to L4, so you know every level from the inside, and shadow the queue |
+| Week 4 | Work P3 cases, with each one and every AI draft reviewed by the queue lead |
+| Weeks 5 to 6 | Half the cap: up to 10 open cases |
 | Day 45 | Full cap |
 | Day 90 | Own the improvements to one trigger's playbook |
 
