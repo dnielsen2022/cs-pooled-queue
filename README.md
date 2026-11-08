@@ -45,20 +45,26 @@ The command prints this week's cases and the rows with data to check, and writes
 `out/worklist.csv`:
 
 ```text
-This week (7):
+This week (10):
    1. P1 Example Alpha Labs         CSM without AI  Non-renewal intent
    2. P1 Example Beta Works         CSM with AI     Dormant · L4
-   3. P2 Example Theta Retail       CSM with AI     Solo · L2
-   4. P2 Example Delta Tools        CSM with AI     Solo · L2
-   5. P2 Example Zeta Data          CSM with AI     Dormant · L1
-   6. P2 Example Gamma Apps         CSM with AI     Solo · L3
-   7. P3 Example Eta Systems        CSM with AI     Dormant · L2
+   3. P1 Example Nu Payments        CSM without AI  Cancellation started
+   4. P2 Example Theta Retail       CSM with AI     Solo · L2
+   5. P2 Example Delta Tools        CSM with AI     Solo · L2
+   6. P2 Example Zeta Data          CSM with AI     Dormant · L1
+   7. P2 Example Gamma Apps         CSM with AI     Solo · L3
+   8. P3 Example Eta Systems        CSM with AI     Dormant · L2
+   9. P3 Example Omicron Labs       CSM with AI     Stalled onboarding
+  10. P3 Example Xi Studio          CSM with AI     Stalled onboarding
 
 Data to check (3):
   - Example Alpha Labs: 44 active seats vs 33 active users: confirm before any seat quote
   - Example Iota Freight: 49 active seats but 1 active user(s): which is right?
   - Example Mu Robotics: 28 active seats vs 15 active users: confirm before any seat quote
 ```
+
+The sample opens 11 cases against a weekly capacity of 10, so the lowest in order (Example Pi Logistics, a P3
+with the latest renewal) waits in Queue (next).
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -92,7 +98,7 @@ config/queue_rules.yaml    the queue policy: every threshold, priority, SLA and 
 pooled_queue/engine.py     applies the policy to each row and orders the cases
 pooled_queue/cli.py        command line entry point; writes the work list
 tests/test_engine.py       one test per rule and edge case, reading thresholds from the policy
-data/sample_export.csv     12 synthetic accounts across the routes and data problems
+data/sample_export.csv     16 synthetic accounts across the routes and data problems
 docs/                      design, reference and playbooks
 .coderabbit.yaml           CodeRabbit configuration
 AGENTS.md                  code guidelines CodeRabbit reviews against
@@ -150,5 +156,5 @@ This is the smallest version of the queue that does the job. Each item below is 
   weights the export can't justify.
 - `capacity.this_week_cases` is 10 because the exercise asks for this week's ten. The steady-state plan is
   about 5 new cases per CSM a week, about 20 for four CSMs, so the setting rises as the team ramps.
-- `data/` holds 12 synthetic rows that exercise every route. The exercise's 40-row export is worked in the
+- `data/` holds 16 synthetic rows that exercise every route. The exercise's 40-row export is worked in the
   submitted sheet.

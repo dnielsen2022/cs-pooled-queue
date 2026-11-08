@@ -68,7 +68,7 @@ with different names only needs that section changed.
 
 ## Sample data
 
-[`data/sample_export.csv`](../data/sample_export.csv) holds 12 synthetic accounts named `Example ...`. They
-cover each route except Queue (next), the dormant and solo flags, seat headroom and the main data
-problems. Real exports go in
+[`data/sample_export.csv`](../data/sample_export.csv) holds 16 synthetic accounts named `Example ...`. They
+cover every route (11 cases against a capacity of 10, so one waits in Queue (next)), every flag, non-renewal
+intent and a started cancellation, seat headroom and the main data problems. Real exports go in
 `data/private/`, which git ignores and CodeRabbit never reviews.

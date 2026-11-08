@@ -11,3 +11,7 @@ Example Iota Freight,20160,Pro,L4,56,49,1,1,25,2027-05-30,annual,N,N,0,58,540,
 Example Kappa Health,14400,Pro,L3,40,33,29,2,11,2027-02-26,annual,N,N,0,47,380,
 Example Lambda Media,7920,Pro,L2,22,1,1,3,3,2026-11-10,annual,Y,N,0,33,190,
 Example Mu Robotics,32400,Pro,L2,90,28,15,5,12,2026-12-20,annual,Y,N,2,39,520,Named CSM
+Example Nu Payments,13680,Pro,L2,38,9,8,6,6,2026-11-15,annual,N,Y,1,30,360,
+Example Xi Studio,11880,Pro,L1,33,5,4,2,2,2027-02-14,annual,N,N,0,26,230,
+Example Omicron Labs,15120,Pro,L1,42,7,6,3,1,2027-03-20,annual,N,N,0,24,200,
+Example Pi Logistics,10080,Pro,L1,28,0,0,60,3,2027-07-01,annual,N,N,0,0,400,

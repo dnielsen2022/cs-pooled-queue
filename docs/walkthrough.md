@@ -73,8 +73,8 @@ python -m pooled_queue.cli data/sample_export.csv --as-of 2026-10-05
 
 The command prints this week's cases in order, with who handles each, lists rows whose data doesn't add up,
 and writes every account's route, handler, rank, SLA, reason, first touch and data flags to
-`out/worklist.csv`. The worked version of the
-exercise's own 40-account export was submitted separately, built from the same rules.
+`out/worklist.csv`. The sample opens 11 cases against a capacity of 10, so one waits in Queue (next). The
+worked version of the exercise's own 40-account export was submitted separately, built from the same rules.
 
 Data problems are flagged, never dropped: missing cells, ARR that doesn't match seats, active seats far above
 active users, a last review older than the account. The [data dictionary](data-dictionary.md) lists each one
@@ -86,8 +86,8 @@ Every row says who handles it: **Automation** (Customer.io runs it end to end), 
 the summary and drafts; the CSM decides and sends) or **CSM without AI** (AI briefs the CSM; a person writes
 every word). The handler for each trigger is set in the policy file, with the limits on AI beside it: AI never
 sends a customer message, sets a close code or orders the queue, and never drafts for non-renewal intent or
-cancellation, where it only briefs the CSM. On the sample, the non-renewal case goes to a CSM without AI and
-the dormant and solo cases to a CSM with AI. [Automation, AI and the person](ai-and-automation.md) gives the
+cancellation, where it only briefs the CSM. On the sample, the non-renewal and cancellation cases go to a CSM without AI
+and the dormant, solo and stalled-onboarding cases to a CSM with AI. [Automation, AI and the person](ai-and-automation.md) gives the
 reason for every signal, where AI sits in a CSM's day, how a wrong AI draft gets caught, and how the automated
 share is tested against the human share.
 

@@ -94,8 +94,11 @@ What happens, with no one remembering to do it:
    arrives unannounced tends to meet silence.
 4. **Close.** An open pooled case closes as Handed up, with anything the brief can't know added as a note.
 
-Accounts that drop into the band come down the same way: the pooled team receives the named CSM's history
-before any case opens.
+Accounts that drop into the band come down by the same rule, but nobody on the pooled team takes them over,
+because nobody owns an account. The named CSM's history goes onto the account record, and if a flag later
+opens a case, the history is part of the case brief. Before the hand-down, the named CSM records any open risk
+where the queue can see it (non-renewal intent the customer has stated, a started cancellation), so a case opens
+on the next run. Otherwise the account starts on automation like any other.
 
 Measured monthly: graduations, and how often the named CSM has to re-ask the customer something the brief
 already covered.
