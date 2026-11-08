@@ -1,6 +1,6 @@
 # Automation, AI and the person
 
-Every signal the queue acts on is handled one of three ways, set by `handled_by` in
+Every in-band signal the queue acts on is handled one of three ways, set by `handled_by` in
 [`config/queue_rules.yaml`](../config/queue_rules.yaml) and shown on every row of the work list:
 
 - **Automation:** the next step is the same for every account, so Customer.io sends templates a person approved once, or a rule creates an AE task.
@@ -8,6 +8,9 @@ Every signal the queue acts on is handled one of three ways, set by `handled_by`
   drafts; the CSM decides and sends.
 - **CSM without AI:** one wrong word can cost the account, so a person writes every word. AI still prepares
   an internal brief for the CSM before the first touch; it drafts nothing the customer sees.
+
+A fourth value, **Named CSM**, marks accounts outside the pool: above the band or already owned by a named
+CSM. They leave the queue, and their named CSM is told about any open signal.
 
 Automation sends; AI never does. Automation sends only fixed Customer.io templates that a person wrote and
 approved once, and creates AE tasks by rule. AI drafts, and a person decides and sends: no AI output reaches a
@@ -23,7 +26,7 @@ customer, sets a close code or orders the queue without a person.
 | Dormant, deep (L3 to L4) or near renewal | CSM with AI | Something broke. AI finds when and where reviews stopped and what changed; the CSM writes the ask | n/a |
 | Solo, outside the solo window | Automation | A "bring your team" campaign works for most | Inside the window: a case (the engine checks nightly). 21 days without a second user: a case opened by the campaign tool, because the export has no campaign start date |
 | Solo, inside the window | CSM with AI | The rollout depends on their own setup. AI drafts the email from it; the call is a person | n/a |
-| Stalled onboarding, inside the window | CSM with AI | AI drafts starter path instructions for their main repo; the CSM checks them before sending | n/a |
+| Stalled onboarding (still L1 after day 45, 2+ active users), inside the window | CSM with AI | AI drafts starter path instructions for their main repo; the CSM checks them before sending | n/a |
 | Stalled onboarding, outside the window | Automation | A configuration campaign with starter path instructions | Inside 180 days of renewal: a case |
 | Non-renewal intent or cancellation | CSM without AI | A save conversation. The customer has to hear a person, in their own words. AI briefs the CSM: risk, usage trend, tickets, save options | n/a |
 | Seat headroom | Automation | The CRM task for the AE is created automatically; the AE is the person who acts | n/a |
@@ -39,7 +42,7 @@ the queue. People are used only where the customer's situation decides what to s
 | Moment | What AI does | What the CSM does |
 | --- | --- | --- |
 | Before the first touch | Writes a short account summary from the case brief: usage, billing, CRM notes, support history | Checks it against the brief fields and fixes anything wrong |
-| Before a save | Prepares an internal save brief: why the account is flagged, renewal date and term, active users against seats over time, the last review, open tickets, and two or three save options from a fixed menu (right-size to active seats, a setup session, a teammate rollout, the AE for pricing) | Checks it, then writes every word to the customer |
+| Before a save | Prepares an internal save brief: why the account is flagged, renewal date and term, active users against seats over time (on a held row, only what to verify, never the disputed numbers), the last review, open tickets, and two or three save options from a fixed menu (right-size to active seats, a setup session, a teammate rollout, the AE for pricing) | Checks it, then writes every word to the customer |
 | The first message | Drafts it from the trigger's first touch and the account's own setup | Edits it and sends it. No AI draft goes out unless a person sends it |
 | During the case | Proposes the next playbook step from the account's activity | Decides the step |
 | Closing | On CSM-with-AI cases, drafts the case note from emails and call notes. On save cases it drafts nothing; the CSM writes the note | Picks the close code and the blocker |
@@ -49,7 +52,7 @@ AI runs inside the tools the team already has (Pylon for the case and drafts), n
 
 ## What AI never does without a person
 
-The `ai` section of the policy file holds these limits, and CodeRabbit flags any pull request that loosens them.
+The `ai` section of the policy file holds these limits. CodeRabbit's "Every trigger says who handles it" check fails a pull request that sets a trigger in `ai.never_assists` to CSM with AI, and the policy-file path instruction asks it to flag any change that lets AI contact a customer, set a close code or order the queue unreviewed. Removing a trigger from `never_assists` is a change a person must catch in review.
 
 - **Never without review:** any message to a customer, a close code, a seat or price figure.
 - **Never at all:** drafting anything customer-facing for non-renewal intent or cancellation (AI only briefs

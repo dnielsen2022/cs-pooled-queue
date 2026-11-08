@@ -130,6 +130,7 @@ def test_contradictory_activity_is_held():
     ({"renewal_date": "2026-09-01"}, "in the past"),
     ({"maturity_level": ""}, "maturity_level"),
     ({"arr_usd": "lots"}, "Invalid arr_usd"),
+    ({"arr_usd": "inf"}, "Invalid arr_usd"),
 ])
 def test_bad_data_is_flagged_not_fatal(fields, phrase):
     """Every row gets a decision; problems go in data_flags."""
@@ -201,3 +202,10 @@ def test_every_row_in_the_sample_has_a_handler():
     """No row leaves the engine without a handling mode."""
     rows = load_export(Path(__file__).parent.parent / "data" / "sample_export.csv")
     assert all(d.handled_by in HANDLING["modes"] for d in triage(rows, RULES, AS_OF))
+
+
+def test_nonrenewal_intent_wins_over_a_contradiction_hold():
+    """A held row that says it won't renew still opens its save case."""
+    d = run(nonrenewal_intent="Y", active_users_30d=1, seats_active_30d=40)
+    assert (d.route, d.priority) == ("Case", TRIG["nonrenewal_intent"]["priority"])
+    assert any("active seats" in f for f in d.data_flags)

@@ -12,7 +12,8 @@ from pathlib import Path
 from pooled_queue.engine import load_rules, triage
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-ADDED = ["route", "handled_by", "priority", "rank", "sla_business_days", "signals", "reason", "first_touch", "also", "data_flags"]
+ADDED = ["route", "handled_by", "priority", "rank", "sla_business_days", "signals", "reason", "first_touch",
+         "also", "data_flags"]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -24,6 +25,10 @@ def main(argv: list[str] | None = None) -> int:
                    help="date the export was taken (YYYY-MM-DD); defaults to today")
     p.add_argument("--out", default="out/worklist.csv")
     a = p.parse_args(argv)
+    try:
+        as_of = dt.date.fromisoformat(a.as_of)
+    except ValueError:
+        p.error(f"--as-of must be a date like 2026-10-05, not {a.as_of!r}")
 
     rules = load_rules(a.rules)
     with open(a.export, newline="", encoding="utf-8") as f:
@@ -34,15 +39,16 @@ def main(argv: list[str] | None = None) -> int:
         print(f"No accounts in {a.export}; nothing to triage.")
         return 0
 
-    decisions = triage(rows, rules, dt.date.fromisoformat(a.as_of))
+    decisions = triage(rows, rules, as_of)
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=header + ADDED, extrasaction="ignore")
+        w = csv.DictWriter(f, fieldnames=header + [c for c in ADDED if c not in header], extrasaction="ignore")
         w.writeheader()
         for d in decisions:
-            w.writerow({**d.row, "route": d.route, "handled_by": d.handled_by, "priority": d.priority, "rank": d.rank or "",
-                        "sla_business_days": d.sla_business_days or "", "signals": "; ".join(d.signals),
+            w.writerow({**d.row, "route": d.route, "handled_by": d.handled_by, "priority": d.priority,
+                        "rank": d.rank or "", "sla_business_days": d.sla_business_days or "",
+                        "signals": "; ".join(d.signals),
                         "reason": d.reason, "first_touch": d.first_touch, "also": "; ".join(d.also),
                         "data_flags": "; ".join(d.data_flags)})
 

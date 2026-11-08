@@ -42,6 +42,7 @@ flags:
 #   Automation      no pooled CSM: approved Customer.io templates or an automatic AE task; AI never sends
 #   CSM with AI     a pooled CSM works it, with AI preparing the account summary and drafts
 #   CSM without AI  a pooled CSM works it and writes every word; AI only prepares an internal brief for the CSM
+#   Named CSM       out of the pool: above the band or already owned; the named CSM is told about open signals
 handling:
   modes: [Automation, CSM with AI, CSM without AI, Named CSM]
   automated_route: Automation  # campaigns and healthy accounts
@@ -60,6 +61,8 @@ ai:
   revert_if_wrong_fact_rate_over: 0.05  # over this share of that window (2 or more of 20): back to CSM without AI
 
 # Testing the automated share against the human share. Applied by the campaign tool, not by this engine.
+# Volume: the holdout keeps about a fifth of would-be cases off the CSMs, and the reverse sample adds about
+# one case for every ten automated accounts. Neither changes the engine's case count.
 measurement:
   holdout_share: 0.2  # share of case-qualifying accounts kept on automation; never intent or cancellation
   reverse_sample_share: 0.1  # of accounts left to automation, this share gets a CSM-with-AI case instead

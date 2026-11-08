@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import csv
 import datetime as dt
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -86,10 +87,13 @@ def parse(row: dict, rules: dict, as_of: dt.date, flags: list[str]) -> Account:
             flags.append(f"Missing {cols[key]}")
             return None
         try:
-            return int(float(text.replace(",", "").replace("$", "")))
+            value = float(text.replace(",", "").replace("$", ""))
         except ValueError:
+            value = math.nan
+        if not math.isfinite(value):
             flags.append(f"Invalid {cols[key]}: {text!r}")
             return None
+        return int(value)
 
     level_text = raw("level").upper()
     level = int(level_text[1:]) if level_text[:1] == "L" and level_text[1:].isdigit() else None
@@ -194,6 +198,7 @@ def _route_flags(a: Account, d: Decision, on: dict[str, bool], rules: dict) -> N
     trig = rules["triggers"]
     dormant, solo, stalled, exhausted = (trig["dormant"], trig["solo"], trig["stalled_onboarding"],
                                          trig["automation_exhausted"])
+    # A missing cell counts as zero below; it is already in data_flags, so nothing is hidden.
     track_day = max(0, (a.idle_days or 0) - rules["flags"]["dormant"]["idle_days_to_fire"])
     if on["onboarding"]:
         d.route, d.reason = "Automated", trig["onboarding"]["automated_track"]
@@ -297,6 +302,8 @@ def decide(row: dict, rules: dict, as_of: dt.date) -> Decision:
         d.first_touch = trig["seat_headroom"]["first_touch"]
         d.reason = (f"{headroom} more active users than seats: buying signal, "
                     f"about ${headroom * band['price_per_seat']:,} ARR.")
+    elif not d.route and a.users is None:
+        d.route, d.reason = "Automated", "Activity unknown: no flag can fire until active users are reported."
     elif not d.route:
         d.route, d.reason = "Automated", "Healthy: leave alone; next-level configuration nudges only."
 

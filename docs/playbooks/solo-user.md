@@ -45,7 +45,8 @@ or **Person** (a person does it, no AI).
 | Day 0 | AI-assisted | AI, then the CSM | AI writes a short account summary from the brief. The CSM checks it against the brief fields before using it. |
 | By business day 3 | AI-assisted | CSM | AI drafts the first email (below) from the account's own setup. The CSM checks every fact, edits and sends it. |
 | Day 7, no reply | AI-assisted | CSM | AI drafts one short follow-up with a booking link. The CSM sends it. |
-| Within 10 days | Person | Customer's admin, guided by the CSM | 25-minute rollout call. Pick 2-3 teammates and the repos they work in. The admin assigns idle seats and connects those repos. Check `knowledge_base.learnings.scope` covers the team's repos. Schedule a weekly CodeRabbit report to the engineering lead. If the account is at L1, add starter path instructions for the main repo first. |
+| Within 10 days | Person | Customer's admin, guided by the CSM | 25-minute rollout call. Next action: the admin seats 2-3 named teammates and connects the repos they work in, on the call. If the account is at L1, add starter path instructions for the main repo first. |
+| End of the call | Person | Customer's admin, guided by the CSM | Next action: confirm `knowledge_base.learnings.scope` covers the team's repos and schedule a weekly CodeRabbit report to the engineering lead. |
 | Same day as the call | AI-assisted | CSM | AI drafts the recap and a one-page rollout plan from the call notes. The CSM corrects and sends it. |
 | Same day as the call | Automated | Campaign tool | Newly seated developers enter the 3-email "first review" campaign. More developers than seats: an AE task is created. |
 | Day 14 | Automated | System | Active users are checked and shown on the case. |

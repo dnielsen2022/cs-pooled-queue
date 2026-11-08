@@ -82,9 +82,13 @@ and what happens to the row.
 
 ### 4. Automation, AI or a person (exercise part 3: automation, AI and the person)
 
-Every row says who handles it: **Automation** (approved Customer.io templates or an automatic AE task; AI never sends), **CSM with AI** (AI prepares
-the summary and drafts; the CSM decides and sends) or **CSM without AI** (AI briefs the CSM; a person writes
-every word). The handler for each trigger is set in the policy file, with the limits on AI beside it: AI never
+Every row says who handles it:
+
+- **Automation:** approved Customer.io templates or an automatic AE task. AI never sends.
+- **CSM with AI:** AI prepares the summary and drafts; the CSM decides and sends.
+- **CSM without AI:** AI briefs the CSM; a person writes every word.
+
+The handler for each trigger is set in the policy file, with the limits on AI beside it: AI never
 sends a customer message, sets a close code or orders the queue, and never drafts for non-renewal intent or
 cancellation, where it only briefs the CSM. On the sample, the non-renewal and cancellation cases go to a CSM without AI
 and the dormant, solo and stalled-onboarding cases to a CSM with AI. [Automation, AI and the person](ai-and-automation.md) gives the

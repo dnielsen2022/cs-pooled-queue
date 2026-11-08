@@ -28,7 +28,8 @@ with different names only needs that section changed.
 
 ### How cells are read
 
-- **Numbers** may include commas or a dollar sign (`$21,600`). Decimals are rounded down.
+- **Numbers** may include commas or a dollar sign (`$21,600`). Decimals are cut off (truncated), so `9.9`
+  reads as 9. Text that isn't a finite number, such as `lots` or `inf`, is flagged as invalid.
 - **Yes or no** cells count `Y`, `yes`, `true` and `1` as yes, in any case. Anything else is no.
 - **Maturity level** must look like `L1` to `L4`.
 - **Term** is monthly only when the cell says `monthly`; anything else is treated as annual.
