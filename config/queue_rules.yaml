@@ -39,7 +39,7 @@ flags:
     max_days_since_signup: 44  # the onboarding nurture covers days 0-44
 
 # Who handles work, by route. Every case trigger below also names its handled_by mode.
-#   Automation      Customer.io runs it end to end; no person involved
+#   Automation      no pooled CSM: approved Customer.io templates or an automatic AE task; AI never sends
 #   CSM with AI     a pooled CSM works it, with AI preparing the account summary and drafts
 #   CSM without AI  a pooled CSM works it and writes every word; AI only prepares an internal brief for the CSM
 handling:

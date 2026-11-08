@@ -3,14 +3,15 @@
 Every signal the queue acts on is handled one of three ways, set by `handled_by` in
 [`config/queue_rules.yaml`](../config/queue_rules.yaml) and shown on every row of the work list:
 
-- **Automation:** the next step is the same for every account, so Customer.io runs it end to end.
+- **Automation:** the next step is the same for every account, so Customer.io sends templates a person approved once, or a rule creates an AE task.
 - **CSM with AI:** the conversation depends on the customer's own setup. AI prepares the summary and the
   drafts; the CSM decides and sends.
 - **CSM without AI:** one wrong word can cost the account, so a person writes every word. AI still prepares
   an internal brief for the CSM before the first touch; it drafts nothing the customer sees.
 
-The rule under all three: AI drafts, a person decides and sends. No AI output reaches a customer, sets a close
-code or orders the queue without a person.
+Automation sends; AI never does. Automation sends only fixed Customer.io templates that a person wrote and
+approved once, and creates AE tasks by rule. AI drafts, and a person decides and sends: no AI output reaches a
+customer, sets a close code or orders the queue without a person.
 
 ## By signal
 
@@ -39,7 +40,7 @@ the queue. People are used only where the customer's situation decides what to s
 | --- | --- | --- |
 | Before the first touch | Writes a short account summary from the case brief: usage, billing, CRM notes, support history | Checks it against the brief fields and fixes anything wrong |
 | Before a save | Prepares an internal save brief: why the account is flagged, renewal date and term, active users against seats over time, the last review, open tickets, and two or three save options from a fixed menu (right-size to active seats, a setup session, a teammate rollout, the AE for pricing) | Checks it, then writes every word to the customer |
-| The first message | Drafts it from the trigger's first touch and the account's own setup | Edits it and sends it. Nothing goes out unless a person sends it |
+| The first message | Drafts it from the trigger's first touch and the account's own setup | Edits it and sends it. No AI draft goes out unless a person sends it |
 | During the case | Proposes the next playbook step from the account's activity | Decides the step |
 | Closing | Drafts the case note from emails and call notes | Picks the close code and the blocker |
 | Ordering the queue | Nothing | Nothing: the order comes from the rules in [how it works](how-it-works.md) |

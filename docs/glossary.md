@@ -6,7 +6,7 @@
 | AI-assisted | A step where AI drafts and a person checks and sends |
 | ARR | Annual recurring revenue: what the account pays per year |
 | Automated | Handled by a campaign or left alone; no CSM time |
-| Automation | A handling mode: Customer.io runs the signal end to end, with no person involved |
+| Automation | A handling mode: no pooled CSM: a Customer.io campaign a person approved once, or an automatic AE task |
 | Band | The ARR range the pooled team covers. Below it is the automated tier; above it is a named CSM |
 | Break/fix | A product fault. Support owns it; a pooled case stays open alongside |
 | Campaign | A sequence of automated emails and in-product messages for one situation, such as onboarding or a dormant account |
