@@ -56,7 +56,8 @@ ai:
   never_assists: [nonrenewal_intent, cancellation_started]  # AI drafts nothing here; it only briefs the CSM
   orders_queue: false  # the queue order comes from the rules below, never from AI
   review_sample_per_week: 10  # AI drafts the queue lead checks against the account record
-  revert_if_wrong_fact_rate_over: 0.05  # over a rolling 4 weeks of reviewed drafts: back to CSM without AI
+  revert_window_drafts: 20  # each trigger is judged on its last 20 checked drafts; all are checked until then
+  revert_if_wrong_fact_rate_over: 0.05  # over this share of that window (2 or more of 20): back to CSM without AI
 
 # Testing the automated share against the human share. Applied by the campaign tool, not by this engine.
 measurement:

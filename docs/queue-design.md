@@ -25,7 +25,9 @@ Every "Otherwise" route runs on automation alone. Why each signal sits where it 
 AI never does without a person are in [automation, AI and the person](ai-and-automation.md).
 
 Accounts under $10k, over $30k or with a named CSM are removed from the queue. Rows whose activity data
-contradicts itself are held: no outreach and no campaigns until the data is verified.
+contradicts itself are held: no outreach and no campaigns until the data is verified. Non-renewal intent or a
+started cancellation on a held row still opens its P1 case at once; the CSM just doesn't quote the disputed
+numbers.
 
 ## Customer requests
 

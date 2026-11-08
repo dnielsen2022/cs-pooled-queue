@@ -94,8 +94,8 @@ every fact, edit, and send. Four rules:
 4. **AI never decides.** You pick the close code, the blocker and the next step. The queue order comes from
    the rules, not from AI.
 
-The queue lead checks 10 AI drafts a week. A trigger whose drafts get facts wrong too often goes back to CSM
-without AI. [Automation, AI and the person](ai-and-automation.md) has the full design.
+The queue lead checks 10 AI drafts a week, and every draft of a trigger until it has 20 checked. A trigger
+with 2 or more wrong in its last 20 checked drafts goes back to CSM without AI. [Automation, AI and the person](ai-and-automation.md) has the full design.
 
 ## A day on the queue
 

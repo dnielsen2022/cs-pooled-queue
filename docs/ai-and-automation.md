@@ -27,7 +27,7 @@ customer, sets a close code or orders the queue without a person.
 | Stalled onboarding, outside the window | Automation | A configuration campaign with starter path instructions | Inside 180 days of renewal: a case |
 | Non-renewal intent or cancellation | CSM without AI | A save conversation. The customer has to hear a person, in their own words. AI briefs the CSM: risk, usage trend, tickets, save options | n/a |
 | Seat headroom | Automation | The CRM task for the AE is created automatically; the AE is the person who acts | n/a |
-| Data that contradicts itself | CSM without AI | Verify with the analytics engineer first. AI only lists the contradictions to check; a summary would repeat the bad number | Verified data: the row is routed again |
+| Data that contradicts itself | CSM without AI | Verify with the analytics engineer first. AI only lists the contradictions to check; a summary would repeat the bad number. Non-renewal intent or a started cancellation still opens its P1 case at once: the hold stops campaigns and outreach about the disputed numbers, not a save | Verified data: the row is routed again |
 | Customer asks for help, triaged as advisory | CSM with AI | AI drafts an answer from the docs and similar past cases; the CSM checks it | Support routes it; see [queue design](queue-design.md#customer-requests) |
 
 In the exercise's 40-account sample, 20 of the 36 in-band accounts need no pooled CSM: 14 stay on automation
@@ -61,9 +61,10 @@ The `ai` section of the policy file holds these limits, and CodeRabbit flags any
 1. **The sender checks.** The CSM who sends a draft owns every fact in it. A wrong fact gets marked on the
    case, so it's counted.
 2. **A weekly sample.** The queue lead checks 10 AI drafts a week against the account record.
-3. **A revert rule.** If more than 5% of a trigger's reviewed drafts get a fact wrong over a rolling four
-   weeks (about 40 drafts), that trigger goes back to CSM without AI until the cause is fixed. A week of 10
-   drafts is too few to judge on its own.
+3. **A revert rule.** Each trigger is judged on its last 20 checked drafts, counting the queue lead's sample
+   and any wrong fact a sender marked. If more than 5% are wrong (2 or more of the 20), that trigger goes back
+   to CSM without AI until the cause is fixed. Until a trigger has 20 checked drafts, the queue lead checks
+   every one of its drafts, so no trigger is judged on a thin sample. The weekly 10 keep the count current.
 4. **Edit rate.** The team tracks how much each draft is rewritten before it's sent. Heavy rewrites on one
    trigger mean the draft isn't helping there.
 

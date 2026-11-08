@@ -84,7 +84,8 @@ rules, reviewed by CodeRabbit like any other policy change.
 | `never_assists` | trigger names | Triggers AI never drafts for (it only prepares the CSM's internal brief); they must be CSM without AI |
 | `orders_queue` | `true` or `false` | Whether AI may order the queue; `false`, so the rules decide |
 | `review_sample_per_week` | drafts | How many AI drafts the queue lead checks each week |
-| `revert_if_wrong_fact_rate_over` | share, 0 to 1 | Above this wrong-fact rate, measured over a rolling four weeks of reviewed drafts, a trigger goes back to CSM without AI |
+| `revert_window_drafts` | drafts | How many of a trigger's most recent checked drafts its wrong-fact rate is measured on. Until a trigger has this many, the queue lead checks every one of its drafts |
+| `revert_if_wrong_fact_rate_over` | share, 0 to 1 | Above this wrong-fact rate across the window, a trigger goes back to CSM without AI |
 
 ## `measurement`
 
