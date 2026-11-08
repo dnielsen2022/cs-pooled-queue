@@ -21,7 +21,7 @@ customer, sets a close code or orders the queue without a person.
 | Healthy, no flag | Automation | Nothing is at risk; next-level configuration nudges only | Any flag |
 | Dormant, shallow and far from renewal | Automation first | Most teams come back after a reminder; it's the cheapest save | 21 days of campaign without activity, or inside 120 days of renewal: a case |
 | Dormant, deep (L3 to L4) or near renewal | CSM with AI | Something broke. AI finds when and where reviews stopped and what changed; the CSM writes the ask | n/a |
-| Solo, outside the solo window | Automation | A "bring your team" campaign works for most | 21 days without a second user, or inside the window: a case |
+| Solo, outside the solo window | Automation | A "bring your team" campaign works for most | Inside the window: a case (the engine checks nightly). 21 days without a second user: a case opened by the campaign tool, because the export has no campaign start date |
 | Solo, inside the window | CSM with AI | The rollout depends on their own setup. AI drafts the email from it; the call is a person | n/a |
 | Stalled onboarding, inside the window | CSM with AI | AI drafts starter path instructions for their main repo; the CSM checks them before sending | n/a |
 | Stalled onboarding, outside the window | Automation | A configuration campaign with starter path instructions | Inside 180 days of renewal: a case |
@@ -42,7 +42,7 @@ the queue. People are used only where the customer's situation decides what to s
 | Before a save | Prepares an internal save brief: why the account is flagged, renewal date and term, active users against seats over time, the last review, open tickets, and two or three save options from a fixed menu (right-size to active seats, a setup session, a teammate rollout, the AE for pricing) | Checks it, then writes every word to the customer |
 | The first message | Drafts it from the trigger's first touch and the account's own setup | Edits it and sends it. No AI draft goes out unless a person sends it |
 | During the case | Proposes the next playbook step from the account's activity | Decides the step |
-| Closing | Drafts the case note from emails and call notes | Picks the close code and the blocker |
+| Closing | On CSM-with-AI cases, drafts the case note from emails and call notes. On save cases it drafts nothing; the CSM writes the note | Picks the close code and the blocker |
 | Ordering the queue | Nothing | Nothing: the order comes from the rules in [how it works](how-it-works.md) |
 
 AI runs inside the tools the team already has (Pylon for the case and drafts), not on a separate platform.

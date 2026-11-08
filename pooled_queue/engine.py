@@ -257,11 +257,15 @@ def _assign_handler(a: Account, d: Decision, rules: dict) -> None:
 
 
 def _sort_key(a: Account, priority: str, order: dict) -> tuple:
-    """Priority tier, renewal window, deeper configuration first, then higher ARR."""
-    renewal = a.days_to_renewal if a.days_to_renewal is not None else 10**6
-    bucket = next((i for i, b in enumerate(order["renewal_buckets_days"]) if renewal <= b),
-                  len(order["renewal_buckets_days"]))
-    return (order["priority_rank"].get(priority, 9), bucket, -(a.level or 0), -(a.arr or 0))
+    """Priority tier, renewal window, deeper configuration first, then higher ARR.
+
+    A priority missing from the policy, or an unknown renewal date, sorts after every configured value.
+    """
+    ranks, buckets = order["priority_rank"], order["renewal_buckets_days"]
+    bucket = len(buckets)
+    if a.days_to_renewal is not None:
+        bucket = next((i for i, b in enumerate(buckets) if a.days_to_renewal <= b), len(buckets))
+    return (ranks.get(priority, max(ranks.values()) + 1), bucket, -(a.level or 0), -(a.arr or 0))
 
 
 def decide(row: dict, rules: dict, as_of: dt.date) -> Decision:
