@@ -5,9 +5,13 @@ you pick up.
 
 ## How work reaches you
 
-Nobody is assigned accounts. Every night the engine opens a case in the support queue for each account whose
-signal fires. Customer requests that support triages as advisory join the same queue during the day. Every
-case is ranked across the whole team, and you pull the next one when you have room.
+Nobody is assigned accounts. Every night the engine writes the work list (`out/worklist.csv`); it doesn't
+connect to the support queue or open cases itself. The queue lead owns the nightly import that turns each
+Work this week and Queue (next) row into a case in Pylon, with its rank, priority, handler and brief, and
+checks each morning that the import ran. If the work list is empty or the import failed, the queue lead tells
+the team before anyone pulls work, so nobody waits on cases that were never created. Customer requests that
+support triages as advisory join the same queue during the day. Every case is ranked across the whole team,
+and you pull the next one when you have room.
 
 Each case arrives with:
 

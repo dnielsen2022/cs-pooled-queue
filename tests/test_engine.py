@@ -10,6 +10,8 @@ from pooled_queue.engine import decide, load_export, load_rules, triage
 RULES = load_rules(Path(__file__).parent.parent / "config" / "queue_rules.yaml")
 AS_OF = dt.date(2026, 10, 5)
 TRIG = RULES["triggers"]
+BAND = RULES["band"]
+IN_BAND_ARR = (BAND["min_arr"] + BAND["max_arr"]) // 2
 
 BASE = {
     "account": "Test Co", "arr_usd": "18000", "plan": "Pro", "maturity_level": "L3", "seats_purchased": "50",
@@ -105,7 +107,8 @@ def test_monthly_terms_are_always_inside_the_window():
     assert d.route == "Case"
 
 
-@pytest.mark.parametrize("arr,manager", [("9000", ""), ("32000", ""), ("20000", "Named CSM")])
+@pytest.mark.parametrize("arr,manager", [(BAND["min_arr"] - 1, ""), (BAND["max_arr"] + 1, ""),
+                                         (IN_BAND_ARR, "Named CSM")])
 def test_out_of_band_rows_are_removed(arr, manager):
     """Outside the band or with a named CSM: not the pooled team's account."""
     assert run(arr_usd=arr, success_manager=manager).route == "Remove"
@@ -131,6 +134,14 @@ def test_contradictory_activity_is_held():
     ({"maturity_level": ""}, "maturity_level"),
     ({"arr_usd": "lots"}, "Invalid arr_usd"),
     ({"arr_usd": "inf"}, "Invalid arr_usd"),
+    ({"seats_purchased": -1}, "Invalid seats_purchased"),
+    ({"active_users_30d": -3}, "Invalid active_users_30d"),
+    ({"maturity_level": "L0"}, "maturity_level"),
+    ({"maturity_level": "L99"}, "maturity_level"),
+    ({"term": ""}, "read as annual"),
+    ({"term": "anual"}, "read as annual"),
+    ({"nonrenewal_intent": ""}, "nonrenewal_intent"),
+    ({"cancellation_started": "maybe"}, "cancellation_started"),
 ])
 def test_bad_data_is_flagged_not_fatal(fields, phrase):
     """Every row gets a decision; problems go in data_flags."""
@@ -156,6 +167,19 @@ def test_cli_handles_an_empty_export(tmp_path, capsys):
     path.write_text(",".join(BASE) + "\n", encoding="utf-8")
     assert main([str(path), "--out", str(tmp_path / "out.csv")]) == 0
     assert "nothing to triage" in capsys.readouterr().out
+
+
+def test_empty_export_replaces_the_previous_work_list(tmp_path):
+    """Yesterday's cases never survive an empty run: the work list is rewritten with only its header."""
+    sample = Path(__file__).parent.parent / "data" / "sample_export.csv"
+    out = tmp_path / "worklist.csv"
+    assert main([str(sample), "--as-of", AS_OF.isoformat(), "--out", str(out)]) == 0
+    assert len(out.read_text(encoding="utf-8").splitlines()) > 1
+    empty = tmp_path / "empty.csv"
+    empty.write_text(",".join(BASE) + "\n", encoding="utf-8")
+    assert main([str(empty), "--as-of", AS_OF.isoformat(), "--out", str(out)]) == 0
+    lines = out.read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 1 and "route" in lines[0]
 
 
 def test_cli_writes_the_work_list(tmp_path):
@@ -190,7 +214,7 @@ def test_ai_never_assists_the_triggers_the_policy_reserves_for_a_person():
     ({}, HANDLING["automated_route"]),
     ({"active_users_30d": 1, "seats_active_30d": 40}, HANDLING["hold_route"]),
     ({"active_users_30d": 60, "seats_active_30d": 50}, TRIG["seat_headroom"]["handled_by"]),
-    ({"arr_usd": "9000"}, HANDLING["below_band"]),
+    ({"arr_usd": BAND["min_arr"] - 1}, HANDLING["below_band"]),
     ({"success_manager": "Named CSM"}, HANDLING["above_band_or_named"]),
 ])
 def test_each_route_carries_the_handler_from_the_policy(fields, expected):
@@ -209,3 +233,40 @@ def test_nonrenewal_intent_wins_over_a_contradiction_hold():
     d = run(nonrenewal_intent="Y", active_users_30d=1, seats_active_30d=40)
     assert (d.route, d.priority) == ("Case", TRIG["nonrenewal_intent"]["priority"])
     assert any("active seats" in f for f in d.data_flags)
+
+
+def test_negative_seats_never_create_headroom():
+    """An invalid seat count is unknown, so it can't send a false buying signal to the AE."""
+    d = run(seats_purchased=-1)
+    assert d.route != "AE"
+    assert not any(s.startswith("Seat headroom") for s in d.signals)
+
+
+def test_impossible_review_age_is_flagged_and_the_run_continues():
+    """A review age too large to be a date is flagged; the row still gets a case and the rest still run."""
+    rows = [row(account="Broken", active_users_30d=0, seats_active_30d=0, days_since_last_review=9999999,
+                days_since_signup="", renewal_date=renews_in(330)), row(account="Fine")]
+    broken, fine = triage(rows, RULES, AS_OF)
+    assert broken.priority == TRIG["dormant"]["deep_priority"]
+    assert "an unknown date" in broken.first_touch
+    assert any("not a real date" in f for f in broken.data_flags)
+    assert fine.route == "Automated"
+
+
+def test_monthly_case_ranks_in_the_nearest_window():
+    """A monthly case isn't pushed behind a same-priority annual case that renews sooner."""
+    days = TRIG["solo"]["renewal_within_days"] - 1
+    rows = [row(account="Annual", maturity_level="L2", active_users_30d=1, seats_active_30d=1,
+                renewal_date=renews_in(days)),
+            row(account="Monthly", maturity_level="L2", active_users_30d=1, seats_active_30d=1, term="monthly",
+                renewal_date=renews_in(330))]
+    ranked = sorted((d for d in triage(rows, RULES, AS_OF) if d.rank), key=lambda d: d.rank)
+    assert [d.account for d in ranked] == ["Monthly", "Annual"]
+
+
+def test_zero_seats_with_active_users_is_held_not_quoted():
+    """Zero seats is a real count: the headroom shows, but the contradiction holds the row from any seat quote."""
+    d = run(seats_purchased=0, active_users_30d=35)
+    assert d.route == "Hold"
+    assert any(s.startswith("Seat headroom") for s in d.signals)
+    assert not any("AE" in x for x in d.also)

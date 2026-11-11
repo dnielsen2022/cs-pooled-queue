@@ -64,8 +64,9 @@ The `ai` section of the policy file holds these limits. CodeRabbit's "Every trig
 1. **The sender checks.** The CSM who sends a draft owns every fact in it. A wrong fact gets marked on the
    case, so it's counted.
 2. **A weekly sample.** The queue lead checks 10 AI drafts a week against the account record.
-3. **A revert rule.** Each trigger is judged on its last 20 checked drafts, counting the queue lead's sample
-   and any wrong fact a sender marked. If more than 5% are wrong (2 or more of the 20), that trigger goes back
+3. **A revert rule.** Each trigger is judged on its last 20 drafts the queue lead checked against the account
+   record. A draft a sender marked wrong joins that check, so it counts once, inside the same 20, alongside
+   the correct drafts the lead checked. If more than 5% are wrong (2 or more of the 20), that trigger goes back
    to CSM without AI until the cause is fixed. Until a trigger has 20 checked drafts, the queue lead checks
    every one of its drafts, so no trigger is judged on a thin sample. The weekly 10 keep the count current.
 4. **Edit rate.** The team tracks how much each draft is rewritten before it's sent. Heavy rewrites on one

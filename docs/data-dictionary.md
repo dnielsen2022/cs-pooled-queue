@@ -30,9 +30,13 @@ with different names only needs that section changed.
 
 - **Numbers** may include commas or a dollar sign (`$21,600`). Decimals are cut off (truncated), so `9.9`
   reads as 9. Text that isn't a finite number, such as `lots` or `inf`, is flagged as invalid.
-- **Yes or no** cells count `Y`, `yes`, `true` and `1` as yes, in any case. Anything else is no.
-- **Maturity level** must look like `L1` to `L4`.
-- **Term** is monthly only when the cell says `monthly`; anything else is treated as annual.
+- **Counts and ARR** can't be negative. A negative value is flagged as invalid and read as unknown, so it
+  can't create seat headroom or move a route.
+- **Yes or no** cells count `Y`, `yes`, `true` and `1` as yes and `N`, `no`, `false` and `0` as no, in any
+  case. A blank or unknown value is flagged and read as no.
+- **Maturity level** must be one of `values.maturity_levels` in the policy file (`L1` to `L4`). Anything
+  else, such as `L0` or `L99`, is flagged and read as unknown.
+- **Term** must be `annual` or `monthly`. A blank or unknown term is flagged and read as annual.
 - **Blank or unreadable cells** become unknown and add a flag such as `Missing renewal_date`. The row is
   never dropped. Unknown support tickets count as zero.
 
@@ -43,11 +47,13 @@ with different names only needs that section changed.
 | Flag | What it means | What happens |
 | --- | --- | --- |
 | `Missing ...` or `Invalid ...` | A cell is blank or can't be read | Flagged; the rules treat the value as unknown |
-| `0 seats purchased` | The account has no seats | Flagged |
+| `0 seats purchased` | The account has no seats and no active users | Flagged |
+| `0 seats purchased but N active user(s): which is right?` | People are active on an account with no seats | The row is held; no seat quote until verified |
 | `ARR per seat is $X, not $Y` | ARR doesn't match seats at the list price: a discount or a wrong ARR | Flagged |
 | `N active seats but M active user(s): which is right?` | Many active seats and almost no active users | The row is held |
 | `N active seats vs M active users` | Active seats well above active users | Flagged; confirm before any seat quote |
 | `Last review N days ago but signed up M days ago: impossible` | The last review is older than the account | Flagged |
+| `Last review N days ago is not a real date` | The review age is too large to be a date | Flagged; the first touch says "an unknown date" |
 | `N active users ... but no review for M days` | People counted as active, yet no recent review | Flagged; ask what counts as active |
 | `0 active users but a review N days ago` | A recent review, yet nobody counted as active | Flagged; ask what counts as active |
 | `Renewal date is in the past` | The renewal has passed or the date is wrong | Flagged |

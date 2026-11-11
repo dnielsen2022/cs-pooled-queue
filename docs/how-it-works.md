@@ -42,8 +42,9 @@ The data checks look for numbers that can't all be true at once: active seats fa
 last review older than the signup, ARR that doesn't match the seat price, a renewal date in the past. Each
 problem is written to `data_flags` in words a CSM can act on.
 
-One problem is serious enough to stop outreach: very few active users while many seats show as active. If
-`hold_on_contradiction` is on, that row is held (step 5).
+Two problems are serious enough to stop outreach: very few active users while many seats show as active,
+and active users on an account with zero seats purchased. If `hold_on_contradiction` is on, those rows are
+held (step 5).
 
 ### 3. Remove what the pool doesn't own
 
@@ -57,7 +58,8 @@ the row. This is the one rule that overrides a hold.
 
 ### 5. Hold contradictory rows
 
-A row whose activity data contradicts itself gets no outreach and no campaigns until someone verifies it.
+A row whose seat or activity data contradicts itself gets no outreach and no campaigns until someone verifies
+it. Its seat headroom still shows in `signals`, but no AE note is added: nobody quotes seats on a held row.
 
 ### 6. Apply the account flags
 
@@ -103,7 +105,8 @@ Whatever the route, the engine adds notes to `also` when they matter to the firs
 Cases are sorted by:
 
 1. priority (P1, then P2, then P3)
-2. renewal window: inside 7, 30, 90, 180 days, then later
+2. renewal window: inside 7, 30, 90, 180 days, then later. With `monthly_always_in_window` on, a monthly
+   term sorts in the nearest window, the same rule that opens its case
 3. deeper configuration first, because more is at stake
 4. higher ARR
 

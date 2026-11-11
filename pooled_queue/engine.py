@@ -67,21 +67,21 @@ def load_export(path: str | Path) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def _yes(value: str | None) -> bool:
-    """True for the export's yes values."""
-    return (value or "").strip().lower() in {"y", "yes", "true", "1"}
+def _allowed(values: list) -> set[str]:
+    """A policy value list as lowercase strings, for matching cells."""
+    return {str(v).strip().lower() for v in values}
 
 
 def parse(row: dict, rules: dict, as_of: dt.date, flags: list[str]) -> Account:
     """Parse one row. Missing or invalid values become None and are recorded in flags."""
-    cols = rules["columns"]
+    cols, values = rules["columns"], rules["values"]
 
     def raw(key: str) -> str:
         """The cell for a policy field, '' when the column or cell is missing."""
         return (row.get(cols[key]) or "").strip()
 
     def number(key: str) -> int | None:
-        """A whole number, or None with a data flag."""
+        """A whole number of zero or more, or None with a data flag. Every count in the export is non-negative."""
         text = raw(key)
         if not text:
             flags.append(f"Missing {cols[key]}")
@@ -90,15 +90,29 @@ def parse(row: dict, rules: dict, as_of: dt.date, flags: list[str]) -> Account:
             value = float(text.replace(",", "").replace("$", ""))
         except ValueError:
             value = math.nan
-        if not math.isfinite(value):
+        if not math.isfinite(value) or value < 0:
             flags.append(f"Invalid {cols[key]}: {text!r}")
             return None
         return int(value)
 
+    def yes_no(key: str) -> bool:
+        """A yes/no cell. Blank or unknown is flagged and read as no."""
+        text = raw(key).lower()
+        if text in _allowed(values["yes_values"]):
+            return True
+        if text not in _allowed(values["no_values"]):
+            flags.append(f"Missing or invalid {cols[key]}: {raw(key)!r}; read as no")
+        return False
+
     level_text = raw("level").upper()
-    level = int(level_text[1:]) if level_text[:1] == "L" and level_text[1:].isdigit() else None
+    allowed_levels = {str(v).strip().upper() for v in values["maturity_levels"]}
+    level = int(level_text[1:]) if level_text in allowed_levels and level_text[1:].isdigit() else None
     if level is None:
         flags.append(f"Missing or invalid {cols['level']}: {raw('level')!r}")
+
+    term = raw("term").lower()
+    if term not in _allowed(values["terms"]):
+        flags.append(f"Missing or invalid {cols['term']}: {raw('term')!r}; read as annual")
 
     renewal = raw("renewal_date")
     days_to_renewal = None
@@ -118,20 +132,35 @@ def parse(row: dict, rules: dict, as_of: dt.date, flags: list[str]) -> Account:
         signup_days=number("days_since_signup"),
         tickets=number("support_tickets") or 0,
         days_to_renewal=days_to_renewal,
-        monthly=raw("term").lower() == "monthly",
-        nonrenewal_intent=_yes(raw("nonrenewal_intent")),
-        cancellation_started=_yes(raw("cancellation_started")),
+        monthly=term == "monthly",
+        nonrenewal_intent=yes_no("nonrenewal_intent"),
+        cancellation_started=yes_no("cancellation_started"),
         named_csm=bool(raw("success_manager")),
     )
 
 
-def data_checks(a: Account, rules: dict, flags: list[str]) -> bool:
-    """Flag contradictions in the row. Returns True when activity data contradicts itself."""
+def _last_review_date(a: Account, as_of: dt.date) -> dt.date | None:
+    """The date of the last review, or None when unknown or too far back to be a real date."""
+    if a.idle_days is None:
+        return None
+    try:
+        return as_of - dt.timedelta(days=a.idle_days)
+    except OverflowError:
+        return None
+
+
+def data_checks(a: Account, rules: dict, flags: list[str], as_of: dt.date) -> bool:
+    """Flag contradictions in the row. Returns True when the row contradicts itself and must be held."""
     checks, price = rules["data_checks"], rules["band"]["price_per_seat"]
     window = checks["activity_window_days"]
     contradiction = False
-    if a.seats == 0:
+    if a.seats == 0 and a.users:
+        flags.append(f"0 seats purchased but {a.users} active user(s): which is right?")
+        contradiction = True
+    elif a.seats == 0:
         flags.append("0 seats purchased")
+    if a.idle_days is not None and _last_review_date(a, as_of) is None:
+        flags.append(f"Last review {a.idle_days} days ago is not a real date: check days_since_last_review")
     if a.arr is not None and a.seats and abs(a.arr / a.seats - price) > checks["price_tolerance_usd"]:
         flags.append(f"ARR per seat is ${a.arr / a.seats:,.0f}, not ${price}: discount or wrong ARR?")
     if a.users is not None and a.seats_active is not None:
@@ -241,8 +270,8 @@ def _fill_first_touch(text: str, a: Account, as_of: dt.date) -> str:
     """Fill the first-touch placeholders from the row. {date} is the date of the last review."""
     if "{date}" not in text:
         return text
-    last = (as_of - dt.timedelta(days=a.idle_days)).isoformat() if a.idle_days is not None else "an unknown date"
-    return text.replace("{date}", last)
+    last = _last_review_date(a, as_of)
+    return text.replace("{date}", last.isoformat() if last else "an unknown date")
 
 
 def _assign_handler(a: Account, d: Decision, rules: dict) -> None:
@@ -261,14 +290,18 @@ def _assign_handler(a: Account, d: Decision, rules: dict) -> None:
         d.handled_by = handling["below_band"] if below else handling["above_band_or_named"]
 
 
-def _sort_key(a: Account, priority: str, order: dict) -> tuple:
+def _sort_key(a: Account, priority: str, rules: dict) -> tuple:
     """Priority tier, renewal window, deeper configuration first, then higher ARR.
 
-    A priority missing from the policy, or an unknown renewal date, sorts after every configured value.
+    A monthly term sorts in the nearest window when monthly_always_in_window is on, the same rule that opens
+    its case. A priority missing from the policy, or an unknown renewal date, sorts after every configured value.
     """
+    order = rules["ordering"]
     ranks, buckets = order["priority_rank"], order["renewal_buckets_days"]
     bucket = len(buckets)
-    if a.days_to_renewal is not None:
+    if a.monthly and rules.get("monthly_always_in_window", True):
+        bucket = 0
+    elif a.days_to_renewal is not None:
         bucket = next((i for i, b in enumerate(buckets) if a.days_to_renewal <= b), len(buckets))
     return (ranks.get(priority, max(ranks.values()) + 1), bucket, -(a.level or 0), -(a.arr or 0))
 
@@ -277,11 +310,12 @@ def decide(row: dict, rules: dict, as_of: dt.date) -> Decision:
     """Apply the queue policy to one export row."""
     flags: list[str] = []
     a = parse(row, rules, as_of, flags)
-    contradiction = data_checks(a, rules, flags)
+    contradiction = data_checks(a, rules, flags, as_of)
     d = Decision(account=a.name, row=row, data_flags=flags)
     trig, band, checks = rules["triggers"], rules["band"], rules["data_checks"]
     on = _signals(a, rules)
-    headroom = max(0, (a.users or 0) - a.seats) if a.seats else 0
+    # Zero purchased seats is a real count; only an unknown seat or user count means no headroom.
+    headroom = max(0, a.users - a.seats) if a.seats is not None and a.users is not None else 0
 
     d.signals = _labels(a, on, headroom)
 
@@ -293,7 +327,7 @@ def decide(row: dict, rules: dict, as_of: dt.date) -> Decision:
         _case(d, trig["cancellation_started"], trig["cancellation_started"]["priority"],
               "Cancellation started inside the band always opens a case.")
     elif in_band and contradiction and checks["hold_on_contradiction"]:
-        d.route, d.reason = "Hold", "Activity data contradicts itself: no outreach or campaigns until verified."
+        d.route, d.reason = "Hold", "Seat or activity data contradicts itself: no outreach or campaigns until verified."
     elif in_band:
         _route_flags(a, d, on, rules)
 
@@ -307,7 +341,8 @@ def decide(row: dict, rules: dict, as_of: dt.date) -> Decision:
     elif not d.route:
         d.route, d.reason = "Automated", "Healthy: leave alone; next-level configuration nudges only."
 
-    if d.route not in ("Remove", "AE") and headroom > 0:
+    # A held row gets no seat note: nobody quotes seats until the data is verified.
+    if d.route not in ("Remove", "AE", "Hold") and headroom > 0:
         d.also.append("AE: seat headroom")
     if headroom > 0 and (a.arr or 0) + headroom * band["price_per_seat"] > band["max_arr"]:
         d.also.append(f"up-tier to a named CSM once expanded past ${band['max_arr']:,}")
@@ -316,7 +351,7 @@ def decide(row: dict, rules: dict, as_of: dt.date) -> Decision:
 
     _assign_handler(a, d, rules)
     d.first_touch = _fill_first_touch(d.first_touch, a, as_of)
-    d.sort_key = _sort_key(a, d.priority, rules["ordering"])
+    d.sort_key = _sort_key(a, d.priority, rules)
     return d
 
 

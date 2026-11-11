@@ -23,6 +23,17 @@ The policy file's format version. Change it only when the structure of the file 
 Maps each field the engine needs to a column name in the export. If the export renames a column, change it
 here, not in code. The [data dictionary](data-dictionary.md) describes each field.
 
+## `values`
+
+The values the export may hold. A cell outside these lists is flagged in `data_flags` before any fallback.
+
+| Key | Unit | Controls |
+| --- | --- | --- |
+| `maturity_levels` | levels | Accepted maturity levels; anything else is read as unknown |
+| `terms` | terms | Accepted terms; a blank or unknown term is read as annual |
+| `yes_values` | cell text | Read as yes, in any case. Quoted, because YAML reads a bare `yes` as a boolean |
+| `no_values` | cell text | Read as no; a blank or unknown cell is also read as no |
+
 ## `flags`
 
 Account flags. They apply at every maturity level.
@@ -99,11 +110,12 @@ Settings for testing the automated share against the human share. The campaign t
 ## `monthly_always_in_window`
 
 `true` or `false`. When `true`, monthly-term accounts count as inside every renewal window, because they can
-leave at any month end.
+leave at any month end, and their cases sort in the nearest renewal bucket.
 
 ## `data_checks`
 
-Flag, never drop. These only add `data_flags` and, for one contradiction, hold the row.
+Flag, never drop. These only add `data_flags` and, for two contradictions (active seats with almost no
+active users, and active users with zero seats), hold the row.
 
 | Key | Unit | Controls |
 | --- | --- | --- |

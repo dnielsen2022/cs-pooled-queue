@@ -44,14 +44,14 @@ or **Person** (a person does it, no AI).
 | Day 0 | Automated | System | The case opens in the queue with the brief attached. |
 | Day 0 | AI-assisted | AI, then the CSM | AI writes a short account summary from the brief. The CSM checks it against the brief fields before using it. |
 | By business day 3 | AI-assisted | CSM | AI drafts the first email (below) from the account's own setup. The CSM checks every fact, edits and sends it. |
-| Day 7, no reply | AI-assisted | CSM | AI drafts one short follow-up with a booking link. The CSM sends it. |
+| Day 7, no reply | AI-assisted | CSM | AI drafts one short follow-up with a booking link. The CSM checks it against the account record, then sends it. |
 | Within 10 days | Person | Customer's admin, guided by the CSM | 25-minute rollout call. Next action: the admin seats 2-3 named teammates and connects the repos they work in, on the call. If the account is at L1, add starter path instructions for the main repo first. |
 | End of the call | Person | Customer's admin, guided by the CSM | Next action: confirm `knowledge_base.learnings.scope` covers the team's repos and schedule a weekly CodeRabbit report to the engineering lead. |
 | Same day as the call | AI-assisted | CSM | AI drafts the recap and a one-page rollout plan from the call notes. The CSM corrects and sends it. |
 | Same day as the call | Automated | Campaign tool | Newly seated developers enter the 3-email "first review" campaign. More developers than seats: an AE task is created. |
 | Day 14 | Automated | System | Active users are checked and shown on the case. |
-| Day 14 | AI-assisted | CSM | Three or more active users: watch. Fewer: a second touch to the engineering lead, showing the reviews their team is missing. AI may draft it; the CSM decides whether to send. |
-| Day 30 | AI-assisted | CSM | Close with a code. Two active users: extend once to day 44, then close. AI drafts the case note; the CSM picks the code and the blocker. |
+| Day 14 | AI-assisted | CSM | Three or more active users: watch. Fewer: a second touch to the engineering lead, showing the reviews their team is missing. AI may draft it; the CSM checks it against the account record and decides whether to send. |
+| Day 30 | AI-assisted | CSM | Three or more active users for 14 days: close as Saved. Fewer, but the customer is engaged (a rollout call done or booked, the admin seating teammates): extend once to day 44, whether one or two users are active, then close as Saved or Back to campaign. Not engaged: close with the code that fits below. AI drafts the case note; the CSM picks the code and the blocker. |
 
 The CSM never changes the customer's settings. The admin does, on the call, with the CSM guiding. If the solo
 user isn't the admin, invite the admin to the call with the solo user's agreement.

@@ -25,6 +25,13 @@ columns:
   days_since_signup: days_since_signup
   success_manager: success_manager
 
+# Values the export may hold. Anything else is flagged before a fallback is used.
+values:
+  maturity_levels: [L1, L2, L3, L4]
+  terms: [annual, monthly]  # a blank or unknown term is flagged and treated as annual
+  yes_values: ["y", "yes", "true", "1"]  # quoted: YAML would read a bare yes or true as a boolean
+  no_values: ["n", "no", "false", "0"]  # a blank or unknown yes/no cell is flagged and treated as no
+
 # Account flags. They apply at every configuration maturity level (L1 to L4).
 flags:
   dormant:

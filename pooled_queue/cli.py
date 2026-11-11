@@ -35,11 +35,9 @@ def main(argv: list[str] | None = None) -> int:
         reader = csv.DictReader(f)
         rows = list(reader)
         header = list(reader.fieldnames or [])
-    if not rows:
-        print(f"No accounts in {a.export}; nothing to triage.")
-        return 0
 
-    decisions = triage(rows, rules, as_of)
+    # Always replace the work list, even for an empty export, so yesterday's cases never look current.
+    decisions = triage(rows, rules, as_of) if rows else []
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", newline="", encoding="utf-8") as f:
@@ -51,6 +49,10 @@ def main(argv: list[str] | None = None) -> int:
                         "signals": "; ".join(d.signals),
                         "reason": d.reason, "first_touch": d.first_touch, "also": "; ".join(d.also),
                         "data_flags": "; ".join(d.data_flags)})
+
+    if not rows:
+        print(f"No accounts in {a.export}; nothing to triage. Wrote an empty work list to {out}")
+        return 0
 
     week = sorted((d for d in decisions if d.route == "Work this week"), key=lambda d: d.rank)
     print(f"This week ({len(week)}):")

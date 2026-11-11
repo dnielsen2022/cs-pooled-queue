@@ -24,8 +24,8 @@ Flags apply at every configuration maturity level (L1 to L4).
 Every "Otherwise" route runs on automation alone. Why each signal sits where it does, where AI helps, and what
 AI never does without a person are in [automation, AI and the person](ai-and-automation.md).
 
-Accounts under $10k, over $30k or with a named CSM are removed from the queue. Rows whose activity data
-contradicts itself are held: no outreach and no campaigns until the data is verified. Non-renewal intent or a
+Accounts under $10k, over $30k or with a named CSM are removed from the queue. Rows whose seat or activity
+data contradicts itself are held: no outreach and no campaigns until the data is verified. Non-renewal intent or a
 started cancellation on a held row still opens its P1 case at once; the CSM just doesn't quote the disputed
 numbers.
 
@@ -54,7 +54,8 @@ intent still wins: a request from an account that has said it may leave opens a 
 
 ## Ordering
 
-Priority tier, then renewal window (7, 30, 90, 180 days), then deeper configuration first, then higher ARR.
+Priority tier, then renewal window (7, 30, 90, 180 days; monthly terms sort in the nearest), then deeper
+configuration first, then higher ARR.
 A P3 case unworked for 5 business days moves up to P2, so nothing starves; nothing is promoted to P1.
 
 ## Closing
