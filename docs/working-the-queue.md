@@ -36,7 +36,7 @@ Each case arrives with:
 
 | Field | What it tells you |
 | --- | --- |
-| Priority and rank | Where it sits in the queue: P1 first, then by renewal date, configuration depth and ARR |
+| Priority and rank | Where it sits in the queue: P1 first, then by renewal window, configuration depth and ARR |
 | SLA | Business days you have until the first human touch |
 | Signals | Why the account surfaced, such as `Solo · L2` |
 | Reason | The rule that opened the case, in a sentence |
