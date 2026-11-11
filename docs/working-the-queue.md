@@ -9,7 +9,9 @@ Nobody is assigned accounts. Every night the engine writes the work list (`out/w
 connect to the support queue or open cases itself. The queue lead owns the nightly import that turns each
 Work this week and Queue (next) row into a case in Pylon, with its rank, priority, handler and brief, and
 checks each morning that the import ran. If the work list is empty or the import failed, the queue lead tells
-the team before anyone pulls work, so nobody waits on cases that were never created.
+the team before anyone pulls work, so nobody waits on cases that were never created. Customer requests that
+support triages as advisory join the same queue during the day. Every case is ranked across the whole team,
+and you pull the next one when you have room.
 
 Before each import, the queue lead reconciles the work list with the campaign tool's measurement samples
 (see [automation, AI and the person](ai-and-automation.md#testing-the-automated-share-against-the-human-share)):
@@ -17,14 +19,18 @@ Before each import, the queue lead reconciles the work list with the campaign to
 - **Holdout accounts aren't imported.** They stay on automation only. Non-renewal intent and a started
   cancellation are never held out, so those rows are always imported.
 - **Reverse-sample accounts are added** as CSM with AI cases, even though the engine left them to automation.
-  The queue lead gives each one the `automation_exhausted` trigger's priority, SLA and first touch, the reason
-  "Reverse sample: left to automation, worked by a person to test the trigger", and a rank below the engine's
-  cases of the same priority. The account stays marked as automation-routed on its record, so the readout can
-  compare it with the accounts automation kept.
+  Each one gets the `automation_exhausted` trigger's priority and SLA and the reason "Reverse sample: left to
+  automation, worked by a person to test the trigger". Its first touch comes from what the account is
+  actually doing, not from a failed campaign:
+  - on a flag's campaign (dormant, solo or stalled onboarding): that trigger's first touch, noting what the
+    campaign has sent so far;
+  - onboarding or healthy: a short check-in that names the next configuration step for their main repo.
+
+  It is ranked with every other case by the policy ordering (priority, renewal window, configuration depth,
+  then ARR), not placed at the end. The account stays marked as automation-routed on its record, so the
+  readout can compare it with the accounts automation kept.
 - **The week is refilled in rank order.** When holdouts leave Work this week, the top Queue (next) rows move
-  up to fill it. Customer requests that
-support triages as advisory join the same queue during the day. Every case is ranked across the whole team,
-and you pull the next one when you have room.
+  up to fill it.
 
 Each case arrives with:
 
