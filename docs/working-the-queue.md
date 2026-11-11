@@ -17,6 +17,10 @@ Before each import, the queue lead reconciles the work list with the campaign to
 - **Holdout accounts aren't imported.** They stay on automation only. Non-renewal intent and a started
   cancellation are never held out, so those rows are always imported.
 - **Reverse-sample accounts are added** as CSM with AI cases, even though the engine left them to automation.
+  The queue lead gives each one the `automation_exhausted` trigger's priority, SLA and first touch, the reason
+  "Reverse sample: left to automation, worked by a person to test the trigger", and a rank below the engine's
+  cases of the same priority. The account stays marked as automation-routed on its record, so the readout can
+  compare it with the accounts automation kept.
 - **The week is refilled in rank order.** When holdouts leave Work this week, the top Queue (next) rows move
   up to fill it. Customer requests that
 support triages as advisory join the same queue during the day. Every case is ranked across the whole team,

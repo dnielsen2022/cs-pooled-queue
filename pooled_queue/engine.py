@@ -173,7 +173,7 @@ def data_checks(a: Account, rules: dict, flags: list[str], as_of: dt.date) -> bo
             flags.append(f"{a.seats_active} active seats vs {a.users} active users: confirm before any seat quote")
     if a.idle_days is not None and a.signup_days is not None and a.idle_days > a.signup_days:
         flags.append(f"Last review {a.idle_days} days ago but signed up {a.signup_days} days ago: impossible")
-    if a.users and a.idle_days is not None and a.idle_days > window:
+    if a.users is not None and a.users > nobody_active and a.idle_days is not None and a.idle_days > window:
         flags.append(f"{a.users} active users in {window} days but no review for {a.idle_days} days: "
                      "what counts as active?")
     if a.users is not None and a.users <= nobody_active and a.idle_days is not None and a.idle_days < window:
