@@ -9,7 +9,16 @@ Nobody is assigned accounts. Every night the engine writes the work list (`out/w
 connect to the support queue or open cases itself. The queue lead owns the nightly import that turns each
 Work this week and Queue (next) row into a case in Pylon, with its rank, priority, handler and brief, and
 checks each morning that the import ran. If the work list is empty or the import failed, the queue lead tells
-the team before anyone pulls work, so nobody waits on cases that were never created. Customer requests that
+the team before anyone pulls work, so nobody waits on cases that were never created.
+
+Before each import, the queue lead reconciles the work list with the campaign tool's measurement samples
+(see [automation, AI and the person](ai-and-automation.md#testing-the-automated-share-against-the-human-share)):
+
+- **Holdout accounts aren't imported.** They stay on automation only. Non-renewal intent and a started
+  cancellation are never held out, so those rows are always imported.
+- **Reverse-sample accounts are added** as CSM with AI cases, even though the engine left them to automation.
+- **The week is refilled in rank order.** When holdouts leave Work this week, the top Queue (next) rows move
+  up to fill it. Customer requests that
 support triages as advisory join the same queue during the day. Every case is ranked across the whole team,
 and you pull the next one when you have room.
 

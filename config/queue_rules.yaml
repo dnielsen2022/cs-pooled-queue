@@ -130,6 +130,7 @@ monthly_always_in_window: true
 # Data checks: flag, never drop.
 data_checks:
   price_tolerance_usd: 1  # ARR per seat this far from price_per_seat is flagged
+  min_seats_purchased: 1  # fewer purchased seats is flagged; with active users it's a contradiction (held)
   mismatch_max_users: 1  # this many active users or fewer...
   mismatch_min_seats: 5  # ...with at least this many active seats is a contradiction
   seats_vs_users_gap: 10  # active seats above active users by this much is flagged

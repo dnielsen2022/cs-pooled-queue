@@ -120,6 +120,7 @@ active users, and active users with zero seats), hold the row.
 | Key | Unit | Controls |
 | --- | --- | --- |
 | `price_tolerance_usd` | USD | ARR per seat further than this from `band.price_per_seat` is flagged |
+| `min_seats_purchased` | seats | Fewer purchased seats is flagged; with active users on the row, it's a contradiction and the row is held |
 | `mismatch_max_users` | users | With this many active users or fewer... |
 | `mismatch_min_seats` | seats | ...and at least this many active seats, the row contradicts itself |
 | `seats_vs_users_gap` | seats | Active seats above active users by this much is flagged before any seat quote |

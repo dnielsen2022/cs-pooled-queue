@@ -154,11 +154,13 @@ def data_checks(a: Account, rules: dict, flags: list[str], as_of: dt.date) -> bo
     checks, price = rules["data_checks"], rules["band"]["price_per_seat"]
     window = checks["activity_window_days"]
     contradiction = False
-    if a.seats == 0 and a.users:
-        flags.append(f"0 seats purchased but {a.users} active user(s): which is right?")
-        contradiction = True
-    elif a.seats == 0:
-        flags.append("0 seats purchased")
+    nobody_active = rules["flags"]["dormant"]["max_active_users"]
+    if a.seats is not None and a.seats < checks["min_seats_purchased"]:
+        if a.users is not None and a.users > nobody_active:
+            flags.append(f"{a.seats} seats purchased but {a.users} active user(s): which is right?")
+            contradiction = True
+        else:
+            flags.append(f"{a.seats} seats purchased")
     if a.idle_days is not None and _last_review_date(a, as_of) is None:
         flags.append(f"Last review {a.idle_days} days ago is not a real date: check days_since_last_review")
     if a.arr is not None and a.seats and abs(a.arr / a.seats - price) > checks["price_tolerance_usd"]:
@@ -174,8 +176,8 @@ def data_checks(a: Account, rules: dict, flags: list[str], as_of: dt.date) -> bo
     if a.users and a.idle_days is not None and a.idle_days > window:
         flags.append(f"{a.users} active users in {window} days but no review for {a.idle_days} days: "
                      "what counts as active?")
-    if a.users == 0 and a.idle_days is not None and a.idle_days < window:
-        flags.append(f"0 active users but a review {a.idle_days} days ago: what counts as active?")
+    if a.users is not None and a.users <= nobody_active and a.idle_days is not None and a.idle_days < window:
+        flags.append(f"{a.users} active users but a review {a.idle_days} days ago: what counts as active?")
     if a.days_to_renewal is not None and a.days_to_renewal < 0:
         flags.append("Renewal date is in the past")
     return contradiction
