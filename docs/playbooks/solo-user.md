@@ -1,0 +1,117 @@
+# Playbook: solo user
+
+**Trigger:** one active user for 30 days, within 150 days of renewal (monthly terms always).
+**Owner:** the pooled CSM who pulls the case. **First touch:** within 3 business days. **Goal:** turn one
+champion into a team of three or more.
+
+A solo user already believes in the tool. Their teammates' pull requests aren't being reviewed, so the team
+has never seen the value, and the person who signs the renewal usually isn't the solo user. This is a
+rollout conversation, not a rescue: unlike a dormant account, nothing broke.
+
+## How the case reaches you
+
+- **P2 from the nightly run:** the account is solo and inside the window above.
+- **P3 when the "bring your team" campaign runs 21 days** without a second active user.
+
+Accounts in the holdout (see Did it work?) never get a solo case. If one reaches you, return it to the
+campaign and tell the queue lead. Non-renewal intent still opens a case for them.
+
+## Before the first touch (15 minutes, from the case brief)
+
+| You need | From |
+| --- | --- |
+| Who the solo user is, and whether they are the CodeRabbit admin | CRM, billing system |
+| Seats bought, assigned and active | Billing system, product analytics |
+| Developers opening pull requests in connected repos | Review data. Until that query exists, ask on the first call |
+| Configuration level, what is set up, and on which repo | Product analytics |
+| The engineering lead or billing contact | CRM |
+| Renewal date, term and ARR | Billing system, CRM |
+| Open support tickets and campaigns already sent | Support queue, campaign tool |
+
+Read any open tickets first. If the case has a data flag (for example, active seats far above active users),
+confirm the real numbers before you mention seats. The AI account summary is a starting point: when it and a
+brief field disagree, the brief field wins.
+
+## Steps
+
+Business days until the first touch; calendar days from the case opening after that.
+
+Each step is marked **Automated** (runs with no person), **AI-assisted** (AI drafts, the CSM checks and sends)
+or **Person** (a person does it, no AI).
+
+| When | Mode | Who | What |
+| --- | --- | --- | --- |
+| Day 0 | Automated | System | The case opens in the queue with the brief attached. |
+| Day 0 | AI-assisted | AI, then the CSM | AI writes a short account summary from the brief. The CSM checks it against the brief fields before using it. |
+| By business day 3 | AI-assisted | CSM | AI drafts the first email (below) from the account's own setup. The CSM checks every fact, edits and sends it. |
+| Day 7, no reply | AI-assisted | CSM | AI drafts one short follow-up with a booking link. The CSM checks it against the account record, then sends it. |
+| Within 10 days | Person | Customer's admin, guided by the CSM | 25-minute rollout call. Next action: the admin seats 2-3 named teammates and connects the repos they work in, on the call. If the account is at L1, add starter path instructions for the main repo first. |
+| End of the call | Person | Customer's admin, guided by the CSM | Next action: confirm `knowledge_base.learnings.scope` covers the team's repos and schedule a weekly CodeRabbit report to the engineering lead. |
+| Same day as the call | AI-assisted | CSM | AI drafts the recap and a one-page rollout plan from the call notes. The CSM corrects and sends it. |
+| Same day as the call | Automated | Campaign tool | Newly seated developers enter the 3-email "first review" campaign. More developers than seats: an AE task is created. |
+| Day 14 | Automated | System | Active users are checked and shown on the case. |
+| Day 14 | AI-assisted | CSM | Three or more active users: watch. Fewer: a second touch to the engineering lead, showing the reviews their team is missing. AI may draft it; the CSM checks it against the account record and decides whether to send. |
+| Day 30 | AI-assisted | CSM | Three or more active users for 14 days: close as Saved. Fewer, but the customer is engaged (a rollout call done or booked, the admin seating teammates): extend once to day 44, whether one or two users are active, then close as Saved or Back to campaign. Not engaged: close with the code that fits below. AI drafts the case note; the CSM picks the code and the blocker. |
+
+The CSM never changes the customer's settings. The admin does, on the call, with the CSM guiding. If the solo
+user isn't the admin, invite the admin to the call with the solo user's agreement.
+
+### First email
+
+> **Subject:** Your CodeRabbit setup on {repo}, for the rest of your team
+>
+> Hi {name}, you've set up {what they configured} on {repo}, but only your pull requests are being reviewed,
+> so only you see it working. {N} of your {seats} seats aren't assigned yet. Could we take 25 minutes to roll
+> your setup out to two or three teammates? {booking link}
+
+At L1, swap the first sentence for: "You're the only one on {repo} getting reviews, and it's running on
+defaults. In 25 minutes we can add starter instructions for that repo and get two or three teammates
+reviewed too."
+
+## If this happens
+
+| If | Then |
+| --- | --- |
+| Non-renewal intent or cancellation appears | The case becomes P1 and moves to CSM without AI: stop using AI drafts. Switch to that first touch within 1 business day |
+| The champion is leaving | Go to the engineering lead the same day. Record the blocker as champion leaving |
+| They say the team won't use it | Ask once what's in the way and record it. If seats are the issue, offer a right-size from active seats |
+| The team really is one developer | Right-size to the seats they use. Close as Saved, right-sized |
+| They ask for more seats or pricing | AE task the same day. You keep the retention work |
+| You find a product fault | File it with Support, with a reproduction. The case stays open |
+| An AI draft gets a fact wrong | Fix it before sending and mark it on the case, so the weekly AI review counts it |
+
+## Closes when
+
+- **Saved:** three or more active users for 14 days running. This is stricter than "flag clear", because two
+  users still carry most of the risk.
+- **Saved, right-sized:** seats cut to what the team uses. Record the dollars lost.
+- **Handed to the AE:** seats or price are the only blocker.
+- **Lost, with reason:** the customer has said they are leaving.
+- **No reply:** two touches and no answer by business day 10. The account returns to the campaign.
+- **Back to campaign:** engaged but under three active users at day 44.
+
+After any close, the account gets a 30-day follow-up campaign and the solo trigger stays quiet for 90 days.
+Non-renewal intent always breaks through.
+
+## Recorded on close
+
+In the case fields, synced to the CRM:
+
+- close code
+- active users at day 0, 14, 30, 60 and 90 (60 and 90 fill in after close)
+- main blocker: no idle seats, lead not bought in, review noise, champion leaving, tool consolidation, price
+- seats before and after, and dollars lost on a right-size
+- touches and minutes spent
+
+## Did it work?
+
+One in five eligible solo accounts is held out at random in the campaign tool and marked on the account
+record. Those accounts get the campaign only.
+
+- **After one quarter:** compare the share reaching three or more active users by day 60, worked against held
+  out. The bar is a 10-point lift.
+- **After two quarters:** compare gross revenue retention at renewal, worked against held out.
+
+Pool both quarters before calling it. The holdout share lives in `measurement.holdout_share` in the policy
+file; the same test runs on every trigger that has an automated alternative (see
+[automation, AI and the person](../ai-and-automation.md)).

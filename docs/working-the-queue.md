@@ -1,0 +1,156 @@
+# Working the queue
+
+How a pooled CSM gets work, works it and closes it. Read this on day one, then the playbook for each trigger
+you pick up.
+
+## How work reaches you
+
+Nobody is assigned accounts. Every night the engine writes the work list (`out/worklist.csv`); it doesn't
+connect to the support queue or open cases itself. The queue lead owns the nightly import that turns each
+Work this week and Queue (next) row into a case in Pylon, with its rank, priority, handler and brief, and
+checks each morning that the import ran. If the work list is empty or the import failed, the queue lead tells
+the team before anyone pulls work, so nobody waits on cases that were never created. Customer requests that
+support triages as advisory join the same queue during the day. Every case is ranked across the whole team,
+and you pull the next one when you have room.
+
+Before each import, the queue lead reconciles the work list with the campaign tool's measurement samples
+(see [automation, AI and the person](ai-and-automation.md#testing-the-automated-share-against-the-human-share)):
+
+- **Holdout accounts aren't imported.** They stay on automation only. Non-renewal intent and a started
+  cancellation are never held out, so those rows are always imported.
+- **Reverse-sample accounts are added** as CSM with AI cases, even though the engine left them to automation.
+  Each one gets the `automation_exhausted` trigger's priority and SLA and the reason "Reverse sample: left to
+  automation, worked by a person to test the trigger". Its first touch comes from what the account is
+  actually doing, not from a failed campaign:
+  - on a flag's campaign (dormant, solo or stalled onboarding): that trigger's first touch, noting what the
+    campaign has sent so far;
+  - onboarding or healthy: a short check-in that names the next configuration step for their main repo.
+
+  It is ranked with every other case by the policy ordering (priority, renewal window, configuration depth,
+  then ARR), not placed at the end. The account stays marked as automation-routed on its record, so the
+  readout can compare it with the accounts automation kept.
+- **The week is refilled in rank order.** When holdouts leave Work this week, the top Queue (next) rows move
+  up to fill it.
+
+Each case arrives with:
+
+| Field | What it tells you |
+| --- | --- |
+| Priority and rank | Where it sits in the queue: P1 first, then by renewal window, configuration depth and ARR |
+| SLA | Business days you have until the first human touch |
+| Signals | Why the account surfaced, such as `Solo · L2` |
+| Reason | The rule that opened the case, in a sentence |
+| First touch | What to say or do first; the same opening for every CSM on that trigger |
+| Also | Notes that change your first touch (below) |
+| Data flags | Numbers on the account that don't add up |
+| Case brief | Who the users are, seats, configuration, renewal, open tickets and campaigns already sent |
+| Handled by | CSM with AI (AI drafts, you check and send) or CSM without AI (AI briefs you; you write every word) |
+
+## Pulling a case
+
+1. **Take the top of the queue.** Don't skip a case because the account looks hard or small; ranking already
+   decided what matters most.
+2. **P1 never waits.** If a P1 is open and unclaimed, it's yours before anything else.
+3. **Stay under the cap.** No more than 20 open cases each. Plan on about 5 new cases a week.
+4. **Meet the SLA.** The clock runs in business days from when the case opened, not from when you pulled it.
+
+| Trigger | Priority | First touch within |
+| --- | --- | --- |
+| Non-renewal intent | P1 | 1 business day |
+| Cancellation started | P1 | 1 business day |
+| Dormant | P1 to P3 | 2 business days |
+| Solo user | P2 | 3 business days |
+| Stalled onboarding | P3 | 3 business days |
+| Campaign ran out | P3 | 3 business days |
+| Customer asks for help (advisory) | P3, or P2 if flagged or renewing within 90 days | 2 business days |
+
+A P3 left unworked for 5 business days moves up to P2, so nothing sits forever.
+
+## Notes on a case
+
+| Note | What you do |
+| --- | --- |
+| Seat headroom | The AE already has a task. Don't quote seats or prices; tell the AE what you learn about the team |
+| Graduation coming | Expansion or a move to an annual term will take the account past the band. Note it in the case so the graduation brief carries it. Graduation itself runs on the rule, not a judgment call |
+| Read the recent support tickets | Read them before reaching out, and acknowledge any open issue in your first touch |
+| Data flags | Don't act on a flagged number. Confirm it with the customer or the analytics engineer first, and note what was wrong |
+
+## When something changes mid-case
+
+- **Non-renewal intent or cancellation appears.** The case becomes P1. Switch to that first touch the same day.
+- **The account crosses the band.** Graduation runs on its own: the named CSM is assigned and gets the brief,
+  and the customer gets a welcome. Add anything the brief can't know, then close the case as handed up
+  (see Graduation to a named CSM in the queue design).
+- **You find a product fault.** File it with Support, with a reproduction. Your case stays open.
+- **The customer asks for seats or pricing.** Create an AE task with who, what and by when. Keep only the
+  retention work.
+
+## Closing
+
+Every case closes with one code and one main blocker, so the team can learn from it.
+
+| Close code | When |
+| --- | --- |
+| Saved | The flag has been clear for 14 days, or the playbook's higher bar is met |
+| Saved, right-sized | Kept the customer at fewer seats; record the dollars lost |
+| Handed to the AE | Seats or price are the only blocker |
+| Handed up | The account moved to a named CSM |
+| Lost, with reason | The customer is leaving; record why |
+| No reply | Two touches over 10 business days with no answer |
+| Back to campaign | The customer engaged but the flag hasn't cleared by the playbook's last day |
+
+After a case closes, the account gets a 30-day follow-up campaign and the same trigger stays quiet for 90
+days. Non-renewal intent always breaks through. Any fix used three times becomes an automated step.
+
+## Working with AI
+
+Most cases are marked **CSM with AI**. AI writes the account summary before your first touch, drafts the first
+message from the customer's own setup, proposes the next playbook step and drafts the case note. You check
+every fact, edit, and send. Four rules:
+
+1. **You send it, you own it.** Nothing AI writes reaches a customer unless you send it.
+2. **The brief wins.** When the AI summary and a brief field disagree, trust the brief field and mark the
+   draft wrong on the case.
+3. **No AI drafts on CSM-without-AI cases.** On non-renewal intent and cancellation, AI prepares your brief
+   (risk, usage trend, tickets, save options), and every word to the customer is yours. If a case turns into
+   one mid-way, stop using drafts.
+4. **AI never decides.** You pick the close code, the blocker and the next step. The queue order comes from
+   the rules, not from AI.
+
+The queue lead checks 10 AI drafts a week, and every draft of a trigger until it has 20 checked. A trigger
+with 2 or more wrong in its last 20 checked drafts goes back to CSM without AI. [Automation, AI and the person](ai-and-automation.md) has the full design.
+
+## A day on the queue
+
+| When | What |
+| --- | --- |
+| 9:00, 15 minutes | Standup: open P1s and any case at risk of missing its SLA |
+| Morning | Check AI summaries and drafts, then first touches and calls, top of the queue first |
+| Afternoon | Rollout sessions, follow-ups and hand-offs |
+| Last hour | Close codes, AI-drafted case notes checked and saved |
+| Friday, 45 minutes | Pattern review: what keeps coming up, and what should become automation or a rule change |
+
+## Your first 90 days
+
+| When | What |
+| --- | --- |
+| Weeks 1 to 2 | Company onboarding: equipment, HR and benefits, corporate training. Set up CodeRabbit on a repository of your own at L1 to L2 |
+| Week 3 | Take that repository to L4, so you know every level from the inside, and shadow the queue |
+| Week 4 | Work P3 cases, with each one and every AI draft reviewed by the queue lead |
+| Weeks 5 to 6 | Half the cap: up to 10 open cases |
+| Day 45 | Full cap |
+| Day 90 | Own the improvements to one trigger's playbook |
+
+## When there's more work than people
+
+The team watches one number weekly: cases closed over cases opened. Below 1.0 for two weeks means the backlog
+is growing, and the team works down this list in order:
+
+1. P1 never waits; P3 cases go back to automation first.
+2. Retune the noisiest trigger. If under half its cases are real risk, tighten the rule.
+3. Batch: weekly rollout and configuration clinics, one to many.
+4. Codify: any fix used three times becomes a campaign step, so that signal runs on automation.
+5. Hire, once SLA misses stay above 10% for 3 weeks after steps 1 to 4.
+
+Other weekly numbers: SLA hit rate by priority, open cases per CSM, age of the oldest unclaimed case, touch
+minutes per case by trigger, and each trigger's precision (the share of its cases that were real risk).

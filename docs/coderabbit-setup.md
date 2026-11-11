@@ -42,7 +42,7 @@ standard a reviewer on this team would hold that file to.
 
 ## Code guidelines (L2)
 
-`knowledge_base.code_guidelines.filePatterns` points CodeRabbit at [`AGENTS.md`](../AGENTS.md). Its seven
+`knowledge_base.code_guidelines.filePatterns` points CodeRabbit at [`AGENTS.md`](../AGENTS.md). Its eight
 rules apply to every review, on top of the path instructions. Keeping them in a file in the repo means
 they are versioned and reviewed like code.
 
